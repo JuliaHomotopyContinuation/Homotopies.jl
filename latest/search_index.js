@@ -13,7 +13,15 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Introduction",
     "category": "section",
-    "text": "Homotopy.jl is a package for constructing (polynomial) homotopies H(xt).Each implemented homotopy has the same Interface so that you can switch easily between different homotopy types."
+    "text": "Homotopy.jl is a package for constructing (polynomial) homotopies H(xt).Each implemented homotopy has the same Interface so that you can switch easily between different homotopy types. Based on this interface there are also some convenient higher level constructs provided, e.g. the construction of a total degree system and its start solutions."
+},
+
+{
+    "location": "index.html#Example-1",
+    "page": "Introduction",
+    "title": "Example",
+    "category": "section",
+    "text": "using Homotopy\n# we use an MultivariatePolynomials implementation to construct the homotopy.\nimport DynamicPolynomials: @polyvar\n\n@polyvar x y z\n\nH = StraightLineHomotopy([x + y^3, x^2*y-2y], [x^3+2, y^3+2])\n# H is now StraightLineHomotopy{Int64},\n# but let's assume our algorithm uses Complex128, to avoid unnecessary conversions\n# it would be better to make\nH = StraightLineHomotopy{Complex128}([x + y^3, x^2*y-2y], [x^3+2, y^3+2])\n\n# we can now evaluate H\nevaluate(H, rand(Complex128, 2), 0.42)\n# or alternatively\nH(rand(Complex128, 2), 0.42)"
 },
 
 {
@@ -38,14 +46,6 @@ var documenterSearchIndex = {"docs": [
     "title": "Homotopies",
     "category": "section",
     "text": "The following homotopies are implementedStraightLineHomotopy\nGammaTrickHomotopy"
-},
-
-{
-    "location": "index.html#Example-1",
-    "page": "Introduction",
-    "title": "Example",
-    "category": "section",
-    "text": "using Homotopy\n# we use an MultivariatePolynomials implementation to construct the homotopy.\nimport DynamicPolynomials: @polyvar\n\n@polyvar x y z\n\nH = StraightLineHomotopy([x + y^3, x^2*y-2y], [x^3+2, y^3+2])\n# H is now StraightLineHomotopy{Int64},\n# but let's assume our algorithm uses Complex128, to avoid unnecessary conversions\n# it would be better to make\nH = StraightLineHomotopy{Complex128}([x + y^3, x^2*y-2y], [x^3+2, y^3+2])\n\n# we can now evaluate H\nevaluate(H, rand(Complex128, 2), 0.42)\n# or alternatively\nH(rand(Complex128, 2), 0.42)"
 },
 
 {
@@ -150,6 +150,46 @@ var documenterSearchIndex = {"docs": [
     "title": "Interface",
     "category": "section",
     "text": "evaluate\nevaluate!\njacobian\njacobian!\ndt\ndt!\nnvariables\nhomogenize\ndehomogenize\nishomogenized\nishomogenous"
+},
+
+{
+    "location": "higherlevelconstructs.html#",
+    "page": "Higher level constructs",
+    "title": "Higher level constructs",
+    "category": "page",
+    "text": ""
+},
+
+{
+    "location": "higherlevelconstructs.html#Homotopy.totaldegree",
+    "page": "Higher level constructs",
+    "title": "Homotopy.totaldegree",
+    "category": "Function",
+    "text": "totaldegree(H::Type{AbstractHomotopy}, F, [unitroots=false])\n\nConstruct a  total degree homotopy of type H with F and an iterator of its solutions. This is the homotopy with start system\n\nbeginalign*\n    z_1^d_1 - b_1\n    z_1^d_2 - b_2\n    vdots \n    z_n^d_n - b_n\nendalign*\n\nand target system F, where d_i is the degree of the i-th polynomial of F. If unitroots=true then b_i=1 otherwise b_i is a random complex number (with real and imaginary part in the unit interval).\n\nExample\n\nH, startsolutions = totaldegree(StraightLineHomotopy{Complex128}, [x^2+y+1, x^3*y-2])\n\n\n\n"
+},
+
+{
+    "location": "higherlevelconstructs.html#Homotopy.TotalDegreeSolutionIterator",
+    "page": "Higher level constructs",
+    "title": "Homotopy.TotalDegreeSolutionIterator",
+    "category": "Type",
+    "text": "TotalDegreeSolutionIterator(degrees, b)\n\nGiven the Vectors degrees and b TotalDegreeSolutionIterator enumerates all solutions of the system\n\nbeginalign*\n    z_1^d_1 - b_1 = 0 \n    z_1^d_2 - b_2 = 0 \n    vdots \n    z_n^d_n - b_n = 0 \nendalign*\n\nwhere d_i is degrees[i] and b_i is b[i].\n\n\n\n"
+},
+
+{
+    "location": "higherlevelconstructs.html#Homotopy.totaldegree_startsystem",
+    "page": "Higher level constructs",
+    "title": "Homotopy.totaldegree_startsystem",
+    "category": "Function",
+    "text": "totaldegree_startsystem(F::Vector{FP.Polynomial{<:Complex}}, [unit_roots=false])\n\nReturn the system\n\nbeginalign*\n    z_1^d_1 - b_1\n    z_1^d_2 - b_2\n    vdots \n    z_n^d_n - b_n\nendalign*\n\nwhere d_i is the degree of the i-th polynomial of F and an iterator of its solutions. If unitroots=true then b_i=1 otherwise b_i is a random complex number (with real and imaginary part in the unit interval).\n\n\n\n"
+},
+
+{
+    "location": "higherlevelconstructs.html#higherlevelconstructs-1",
+    "page": "Higher level constructs",
+    "title": "Higher level constructs",
+    "category": "section",
+    "text": "totaldegree\nTotalDegreeSolutionIterator\ntotaldegree_startsystem"
 },
 
 ]}
