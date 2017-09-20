@@ -57,6 +57,14 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "interface.html#Interface-1",
+    "page": "Interface",
+    "title": "Interface",
+    "category": "section",
+    "text": ""
+},
+
+{
     "location": "interface.html#Homotopy.evaluate",
     "page": "Interface",
     "title": "Homotopy.evaluate",
@@ -70,6 +78,14 @@ var documenterSearchIndex = {"docs": [
     "title": "Homotopy.evaluate!",
     "category": "Function",
     "text": "evaluate!(u::Vector, H::AbstractHomotopy, x, t)\n\nEvaluate the homotopy H at x to time t, i.e. H(xt), and store the result in u. Use this instead of evaluate to avoid allocations.\n\n\n\n"
+},
+
+{
+    "location": "interface.html#Evaluation-1",
+    "page": "Interface",
+    "title": "Evaluation",
+    "category": "section",
+    "text": "evaluate\nevaluate!"
 },
 
 {
@@ -105,11 +121,11 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "interface.html#Homotopy.nvariables",
+    "location": "interface.html#Differentiation-1",
     "page": "Interface",
-    "title": "Homotopy.nvariables",
-    "category": "Function",
-    "text": "nvariables(H::AbstractHomotopy)\n\nThe number of variables which H expects as input, i.e. to evaluate H(x,t) x has to be a vector of length nvariables(H).\n\n\n\n"
+    "title": "Differentiation",
+    "category": "section",
+    "text": "jacobian\njacobian!\ndt\ndt!"
 },
 
 {
@@ -145,11 +161,27 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "interface.html#Interface-1",
+    "location": "interface.html#Homogenization-1",
     "page": "Interface",
-    "title": "Interface",
+    "title": "Homogenization",
     "category": "section",
-    "text": "evaluate\nevaluate!\njacobian\njacobian!\ndt\ndt!\nnvariables\nhomogenize\ndehomogenize\nishomogenized\nishomogenous"
+    "text": "homogenize\ndehomogenize\nishomogenized\nishomogenous"
+},
+
+{
+    "location": "interface.html#Homotopy.nvariables",
+    "page": "Interface",
+    "title": "Homotopy.nvariables",
+    "category": "Function",
+    "text": "nvariables(H::AbstractHomotopy)\n\nThe number of variables which H expects as input, i.e. to evaluate H(x,t) x has to be a vector of length nvariables(H).\n\n\n\n"
+},
+
+{
+    "location": "interface.html#Misc-1",
+    "page": "Interface",
+    "title": "Misc",
+    "category": "section",
+    "text": "nvariables"
 },
 
 {
@@ -157,6 +189,14 @@ var documenterSearchIndex = {"docs": [
     "page": "Higher level constructs",
     "title": "Higher level constructs",
     "category": "page",
+    "text": ""
+},
+
+{
+    "location": "higherlevelconstructs.html#higherlevelconstructs-1",
+    "page": "Higher level constructs",
+    "title": "Higher level constructs",
+    "category": "section",
     "text": ""
 },
 
@@ -185,11 +225,35 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "higherlevelconstructs.html#higherlevelconstructs-1",
+    "location": "higherlevelconstructs.html#Total-degree-homotopy-1",
     "page": "Higher level constructs",
-    "title": "Higher level constructs",
+    "title": "Total degree homotopy",
     "category": "section",
     "text": "totaldegree\nTotalDegreeSolutionIterator\ntotaldegree_startsystem"
+},
+
+{
+    "location": "higherlevelconstructs.html#Homotopy.randomhomotopy",
+    "page": "Higher level constructs",
+    "title": "Homotopy.randomhomotopy",
+    "category": "Function",
+    "text": "randomhomotopy(::Type{AbstractHomotopy{T}}, size::Int; kwargs...)\n\nCreate a total degree homotopy where the target system is a randomsystem(T, size, size; kwargs...).\n\nExample\n\njulia> H, solutions = randomhomotopy(StraightLineHomotopy{Complex128}, 2, mindegree=3, maxdegree=6);\njulia> length(H)\n3\njulia> nvariables(H)\n3\n\n\n\n"
+},
+
+{
+    "location": "higherlevelconstructs.html#Homotopy.randomsystem",
+    "page": "Higher level constructs",
+    "title": "Homotopy.randomsystem",
+    "category": "Function",
+    "text": "randomsystem([T=Complex128,] nequations::Int, nvars::Int; mindegree=0, maxdegree=5, rng=Base.Random.GLOBAL_RNG)\n\nCreates a random polynomial system of nequations equations with nvars variables (named x_1, ...x_nvars). Each polynomial has a total degree uniformly drawn from mindegree maxdegree. The coefficients are drawn independently from the given rng.\n\nrandomsystem([T=Complex128,] degrees::Vector{Int}, variables::Vector{Symbol}; rng=N(0,1))\n\nCreate a random polynomial system with the given degrees and variables.\n\n\n\n"
+},
+
+{
+    "location": "higherlevelconstructs.html#Random-homotopies-1",
+    "page": "Higher level constructs",
+    "title": "Random homotopies",
+    "category": "section",
+    "text": "randomhomotopy\nrandomsystem"
 },
 
 ]}
