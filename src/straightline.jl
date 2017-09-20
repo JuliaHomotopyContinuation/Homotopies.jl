@@ -102,7 +102,7 @@ end
 #
 # PROMOTION AND CONVERSION
 #
-function Base.promote_type(
+function Base.promote_rule(
     ::Type{StraightLineHomotopy{T}},
     ::Type{StraightLineHomotopy{S}}) where {S<:Number,T<:Number}
     StraightLineHomotopy{promote_type(T,S)}

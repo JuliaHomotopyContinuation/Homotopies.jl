@@ -148,7 +148,7 @@ end
 #
 # PROMOTION AND CONVERSION
 #
-function Base.promote_type(
+function Base.promote_rule(
     ::Type{GammaTrickHomotopy{T}},
     ::Type{GammaTrickHomotopy{S}}) where {S<:Complex,T<:Complex}
     GammaTrickHomotopy{promote_type(T,S)}
