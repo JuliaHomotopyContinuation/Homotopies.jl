@@ -10,6 +10,7 @@ Construct the homotopy `t * start + (1-t) * target`.
 * `MP.AbstractPolynomial`
 * `Vector{<:FP.Polynomial}` where `FP` is [`FixedPolynomials`](https://github.com/saschatimme/FixedPolynomials.jl)
 
+
     StraightLineHomotopy{T}(start, target)
 
 You can also force a specific coefficient type `T`.

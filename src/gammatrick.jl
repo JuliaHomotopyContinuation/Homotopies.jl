@@ -11,10 +11,12 @@ randomly and uniformly from the complex unit circle.
 * `MP.AbstractPolynomial`
 * `Vector{<:FP.Polynomial}` where `FP` is [`FixedPolynomials`](https://github.com/saschatimme/FixedPolynomials.jl)
 
+
     GammaTrickHomotopy(start, target, seed::Int)
 
 You can also supply a `seed` for the RNG which is used to draw `γ`,
 i.e. subsequent invocations with the same `seed` will produce the same `γ`.
+
 
     GammaTrickHomotopy{T}(start, target, [γ])
     GammaTrickHomotopy{T}(start, target, seed::Int)
