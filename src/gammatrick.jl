@@ -231,7 +231,7 @@ function ishomogenous(H::GammaTrickHomotopy)
     all(FP.ishomogenous.(H.start)) && all(FP.ishomogenous.(H.target))
 end
 
-nvariables(H::GammaTrickHomotopy) = nvariables(H.start[1])
+nvariables(H::GammaTrickHomotopy) = FP.nvariables(H.start[1])
 Base.length(H::GammaTrickHomotopy) = length(H.start)
 
 # """

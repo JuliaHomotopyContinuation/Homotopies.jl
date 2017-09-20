@@ -28,6 +28,7 @@ import DynamicPolynomials: @polyvar
 
     w = [1.0, 2.0, 2.0]
     @test evaluate(H, w, 1.0) == [7, 3]
+    @test H(w, 1.0) == [7, 3]
     u = zeros(2)
     evaluate!(u, H, w, 1.0)
     @test u == [7, 3]
@@ -63,6 +64,8 @@ import DynamicPolynomials: @polyvar
     @test isequal(HH, homogenize(HH))
     @test dehomogenize(HH) == H
 
+    @test length(H) == 1
+    @test nvariables(H) == 3
 end
 
 @testset "GammaTrickHomotopy" begin
@@ -103,6 +106,7 @@ end
 
     w = complex.([1.0, 2.0, 2.0])
     @test evaluate(H, w, 1.0) == H.γ * [7, 3]
+    @test H(w, 1.0) == H.γ * [7, 3]
     u = zeros(Complex128, 2)
     evaluate!(u, H, w, 1.0)
     @test u == H.γ * [7, 3]
@@ -134,4 +138,7 @@ end
     @test HH == homogenize(HH)
     @test isequal(HH, homogenize(HH))
     @test dehomogenize(HH) == H
+
+    @test length(H) == 1
+    @test nvariables(H) == 3
 end

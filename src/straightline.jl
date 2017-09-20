@@ -180,7 +180,7 @@ function ishomogenous(H::StraightLineHomotopy)
     all(FP.ishomogenous.(H.start)) && all(FP.ishomogenous.(H.target))
 end
 
-nvariables(H::StraightLineHomotopy) = nvariables(H.start[1])
+nvariables(H::StraightLineHomotopy) = FP.nvariables(H.start[1])
 Base.length(H::StraightLineHomotopy) = length(H.start)
 
 
