@@ -1,15 +1,28 @@
 # Interface
 
+## Evaluation
 ```@docs
 evaluate
 evaluate!
+```
+
+## Differentiation
+```@docs
 jacobian
 jacobian!
 dt
 dt!
-nvariables
+```
+
+## Homogenization
+```@docs
 homogenize
 dehomogenize
 ishomogenized
 ishomogenous
+```
+
+## Misc
+```@docs
+nvariables
 ```

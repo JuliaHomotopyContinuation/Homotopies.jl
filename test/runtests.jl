@@ -165,3 +165,19 @@ end
     H, sols = totaldegree(GammaTrickHomotopy, [x^2+y+1, x^3*y-2])
     @test H isa GammaTrickHomotopy{Complex128}
 end
+
+
+@testset "randomhomotopy" begin
+    H, solutions = randomhomotopy(StraightLineHomotopy{Complex64}, 3)
+    @test H isa StraightLineHomotopy{Complex64}
+
+    H, solutions = randomhomotopy(StraightLineHomotopy, 3)
+    @test H isa StraightLineHomotopy{Complex128}
+    @test length(H) == 3
+    @test nvariables(H) == 3
+    @test length(solutions) == prod(FP.degree.(H.start))
+
+    for sol in solutions
+        @test norm(H(sol, 1.0)) ≈ 0 atol=1e-14
+    end
+end

@@ -13,4 +13,5 @@ module Homotopy
     include("straightline.jl")
     include("gammatrick.jl")
     include("totaldegree.jl")
+    include("randomhomotopy.jl")
 end
