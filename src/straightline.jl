@@ -3,7 +3,16 @@ export StraightLineHomotopy
 """
     StraightLineHomotopy(start, target)
 
-Constructs the homotopy `t * start + (1-t) * target`.
+Construct the homotopy `t * start + (1-t) * target`.
+
+`start` and `target` have to match and to be one of the following
+* `Vector{<:MP.AbstractPolynomial}` where `MP` is [`MultivariatePolynomials`](https://github.com/blegat/MultivariatePolynomials.jl)
+* `MP.AbstractPolynomial`
+* `Vector{<:FP.Polynomial}` where `FP` is [`FixedPolynomials`](https://github.com/saschatimme/FixedPolynomials.jl)
+
+    StraightLineHomotopy{T}(start, target)
+
+You can also force a specific coefficient type `T`.
 """
 struct StraightLineHomotopy{T<:Number} <: AbstractPolynomialHomotopy{T}
     start::Vector{FP.Polynomial{T}}

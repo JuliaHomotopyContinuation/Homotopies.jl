@@ -1,9 +1,25 @@
 export GammaTrickHomotopy
 
 """
-    GammaTrickHomotopy(start, target)
+    GammaTrickHomotopy(start, target, [γ])
 
-Constructs the homotopy `(1-t)⋅target + t⋅γ⋅start`.
+Construct the homotopy `(1-t)⋅target + t⋅γ⋅start`. If `γ` is not supplied it will be drawn
+randomly and uniformly from the complex unit circle.
+
+`start` and `target` have to match and to be one of the following
+* `Vector{<:MP.AbstractPolynomial}` where `MP` is [`MultivariatePolynomials`](https://github.com/blegat/MultivariatePolynomials.jl)
+* `MP.AbstractPolynomial`
+* `Vector{<:FP.Polynomial}` where `FP` is [`FixedPolynomials`](https://github.com/saschatimme/FixedPolynomials.jl)
+
+    GammaTrickHomotopy(start, target, seed::Int)
+
+You can also supply a `seed` for the RNG which is used to draw `γ`,
+i.e. subsequent invocations with the same `seed` will produce the same `γ`.
+
+    GammaTrickHomotopy{T}(start, target, [γ])
+    GammaTrickHomotopy{T}(start, target, seed::Int)
+
+You can also force a specific coefficient type `T`.
 """
 struct GammaTrickHomotopy{T<:Complex} <: AbstractPolynomialHomotopy{T}
     start::Vector{FP.Polynomial{T}}

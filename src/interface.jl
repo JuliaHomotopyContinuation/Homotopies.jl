@@ -11,7 +11,7 @@ function evaluate end
 """
     evaluate!(u::Vector, H::AbstractHomotopy, x, t)
 
-Evaluate the homotopy `H` at `x` to time `t`, i.e. `H(x,t)`, and store the result in `u`.
+Evaluate the homotopy `H` at `x` to time `t`, i.e. ``H(x,t)``, and store the result in `u`.
 Use this instead of [`evaluate`](@ref) to avoid allocations.
 """
 function evaluate! end
@@ -38,7 +38,7 @@ function jacobian! end
     dt(H::AbstractHomotopy)
 
 Compute an evaluation function `(x, t) -> ∂H∂t(x,t)` of the partial derivative
-``\frac{∂H}{∂t}`` of the homotopy ``H``.
+``\\frac{∂H}{∂t}`` of the homotopy ``H``.
 """
 function dt end
 
@@ -46,7 +46,7 @@ function dt end
     dt!(H::AbstractHomotopy)
 
 Compute an inplace evaluation function `(u, x, t) -> u := ∂H∂t(x,t)` of the partial derivative
-``\frac{∂H}{∂t}`` of the homotopy ``H``. Use this instead of [`dt`](@ref) to avoid allocations.
+``\\frac{∂H}{∂t}`` of the homotopy ``H``. Use this instead of [`dt`](@ref) to avoid allocations.
 """
 function dt! end
 
