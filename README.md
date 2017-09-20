@@ -1,9 +1,10 @@
 # Homotopy
 
 A package for constructing [homotopies](https://en.wikipedia.org/wiki/Homotopy) `H(x,t)`.
-Currently the following homotopies are implemented
+Currently the following homotopies are implemented:
 
 **StraightLineHomotopy**
+
 A `StraightLineHomotopy` has the form
 ```julia
 (1 - t) * F + t * G
@@ -12,6 +13,8 @@ where `F` and `G` are systems of polynomials.
 
 
 **GammaTrickHomotopy**
+
+
 A `GammaTrickHomotopy` has the form
 ```julia
 (1 - t) * F + t * γ * G`
