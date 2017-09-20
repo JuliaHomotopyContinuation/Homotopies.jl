@@ -1,5 +1,137 @@
 using Homotopy
 using Base.Test
+import FixedPolynomials
+const FP = FixedPolynomials
+import DynamicPolynomials: @polyvar
 
-# write your own tests here
-@test 1 == 2
+@testset "StraightLineHomotopy" begin
+    @polyvar x y z
+    f = x + y + 2z
+    g = x + z
+    h = y + z
+
+
+    @test StraightLineHomotopy(f, g) isa StraightLineHomotopy{Int64}
+    @test StraightLineHomotopy([f, f], [g, h]) isa StraightLineHomotopy{Int64}
+    @test StraightLineHomotopy{Float64}([f, g], [f, h]) isa StraightLineHomotopy{Float64}
+    @test StraightLineHomotopy{Float64}(f, g) isa StraightLineHomotopy{Float64}
+    @test StraightLineHomotopy([FP.Polynomial(f)], [FP.Polynomial{Complex128}(f)]) isa StraightLineHomotopy{Complex128}
+    @test_throws AssertionError StraightLineHomotopy{Complex128}([f], [g])
+    @test_throws AssertionError StraightLineHomotopy{Complex128}([f], [f, f])
+
+
+    H = StraightLineHomotopy{Float64}([f, g], [f, h])
+    K = StraightLineHomotopy([f, g], [f, h])
+    @test promote_type(typeof(H), typeof(K)) == StraightLineHomotopy{Float64}
+    @test convert(StraightLineHomotopy{Float64}, K) isa StraightLineHomotopy{Float64}
+
+
+    w = [1.0, 2.0, 2.0]
+    @test evaluate(H, w, 1.0) == [7, 3]
+    u = zeros(2)
+    evaluate!(u, H, w, 1.0)
+    @test u == [7, 3]
+
+
+    JH = jacobian(H)
+    @test JH(rand(3), 0.0) == [1 1 2; 0 1 1]
+    @test JH(rand(3), 1.0) == [1 1 2; 1 0 1]
+    u = zeros(2, 3)
+    JH! = jacobian!(H)
+    @test JH!(u, rand(3), 0.0) == JH(rand(3), 0.0)
+    @test u == JH(rand(3), 0.0)
+
+
+    HDT = dt(H)
+    @test HDT([1.0, 2, 2], 1.0) == [0, -1]
+    u = zeros(2)
+    HDT! = dt!(H)
+    HDT!(u, [1, 2, 2.0], 1.0)
+    @test u == [0, -1]
+    @test string(H) == "Homotopy.StraightLineHomotopy{Float64}((1-t)⋅[x+y+2.0z, y+z] + t⋅[x+y+2.0z, x+z])\n"
+
+
+
+    H = StraightLineHomotopy(x^2+y+z, z^2+2+x+y^2)
+    @test ishomogenous(H) == false
+    @test ishomogenized(H) == false
+    HH = homogenize(H)
+    @test ishomogenous(HH)
+    @test ishomogenized(HH)
+    @test H != HH
+    @test HH == homogenize(HH)
+    @test isequal(HH, homogenize(HH))
+    @test dehomogenize(HH) == H
+
+end
+
+@testset "GammaTrickHomotopy" begin
+    @polyvar x y z
+    f = x + y + 2z
+    g = x + z
+    h = y + z
+
+    γ = rand(Complex128)
+    @test GammaTrickHomotopy(f, g) isa GammaTrickHomotopy{Complex128}
+    @test GammaTrickHomotopy([f, f], [g, h]) isa GammaTrickHomotopy{Complex128}
+    @test GammaTrickHomotopy([f, f], [g, h], 2323) isa GammaTrickHomotopy{Complex128}
+    @test GammaTrickHomotopy([f, f], [g, h], γ) isa GammaTrickHomotopy{Complex128}
+    @test GammaTrickHomotopy{Complex64}([f, g], [f, h]) isa GammaTrickHomotopy{Complex64}
+    @test GammaTrickHomotopy{Complex64}([f, g], [f, h], 232) isa GammaTrickHomotopy{Complex64}
+    @test GammaTrickHomotopy{Complex64}([f, g], [f, h], γ) isa GammaTrickHomotopy{Complex64}
+    @test GammaTrickHomotopy{Complex64}(f, g) isa GammaTrickHomotopy{Complex64}
+    @test GammaTrickHomotopy{Complex64}(f, g, 123) isa GammaTrickHomotopy{Complex64}
+    @test GammaTrickHomotopy{Complex64}(f, g, γ) isa GammaTrickHomotopy{Complex64}
+    @test GammaTrickHomotopy{Complex64}([FP.Polynomial(f)], [FP.Polynomial{Complex128}(f)]) isa GammaTrickHomotopy{Complex64}
+    @test GammaTrickHomotopy{Complex64}([FP.Polynomial(f)], [FP.Polynomial{Complex128}(f)], 232) isa GammaTrickHomotopy{Complex64}
+    @test GammaTrickHomotopy{Complex64}([FP.Polynomial(f)], [FP.Polynomial{Complex128}(f)], γ) isa GammaTrickHomotopy{Complex64}
+    @test GammaTrickHomotopy([FP.Polynomial(f)], [FP.Polynomial{Complex128}(f)]) isa GammaTrickHomotopy{Complex128}
+    @test GammaTrickHomotopy([FP.Polynomial(f)], [FP.Polynomial{Complex128}(f)], 12312) isa GammaTrickHomotopy{Complex128}
+    @test GammaTrickHomotopy([FP.Polynomial(f)], [FP.Polynomial{Complex128}(f)], γ) isa GammaTrickHomotopy{Complex128}
+
+    @test_throws AssertionError GammaTrickHomotopy{Complex128}([f], [g])
+    @test_throws AssertionError GammaTrickHomotopy{Complex128}([f], [f, f])
+
+    H = GammaTrickHomotopy([f, g], [f, h])
+    K = GammaTrickHomotopy{Complex32}([f, g], [f, h])
+    @test promote_type(typeof(H), typeof(K)) == GammaTrickHomotopy{Complex128}
+    @test convert(GammaTrickHomotopy{Complex128}, K) isa GammaTrickHomotopy{Complex128}
+
+
+    @test GammaTrickHomotopy([f, f], [g, h], 2323).γ == GammaTrickHomotopy([f, f], [g, h], 2323).γ
+
+
+    w = complex.([1.0, 2.0, 2.0])
+    @test evaluate(H, w, 1.0) == H.γ * [7, 3]
+    u = zeros(Complex128, 2)
+    evaluate!(u, H, w, 1.0)
+    @test u == H.γ * [7, 3]
+
+    JH = jacobian(H)
+    @test JH(rand(Complex128, 3), 0.0) == [1 1 2; 0 1 1]
+    @test JH(rand(Complex128, 3), 1.0) == H.γ * [1 1 2; 1 0 1]
+    u = zeros(Complex128, 2, 3)
+    JH! = jacobian!(H)
+    @test JH!(u, rand(Complex128, 3), 0.0) == JH(rand(Complex128, 3), 0.0)
+    @test u == JH(rand(Complex128, 3), 0.0)
+
+
+    HDT = dt(H)
+    @test HDT([1.0+0im, 2, 2], 1.0) == H.γ * [7, 3] - [7, 4]
+    u = zeros(Complex128, 2)
+    HDT! = dt!(H)
+    HDT!(u, [1+0im, 2, 2.0], 1.0)
+    @test u == H.γ * [7, 3] - [7, 4]
+    @test string(H) == "Homotopy.GammaTrickHomotopy{Complex{Float64}}((1-t)⋅[x+y+2.0z, y+z] + t⋅[x+y+2.0z, x+z])\n"
+
+    H = GammaTrickHomotopy(x^2+y+z, z^2+2+x+y^2)
+    @test ishomogenous(H) == false
+    @test ishomogenized(H) == false
+    HH = homogenize(H)
+    @test ishomogenous(HH)
+    @test ishomogenized(HH)
+    @test H != HH
+    @test HH == homogenize(HH)
+    @test isequal(HH, homogenize(HH))
+    @test dehomogenize(HH) == H
+end

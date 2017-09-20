@@ -1,0 +1,202 @@
+export StraightLineHomotopy
+
+"""
+    StraightLineHomotopy(start, target)
+
+Constructs the homotopy `t * start + (1-t) * target`.
+"""
+struct StraightLineHomotopy{T<:Number} <: AbstractPolynomialHomotopy{T}
+    start::Vector{FP.Polynomial{T}}
+    target::Vector{FP.Polynomial{T}}
+
+    function StraightLineHomotopy{T}(start::Vector{FP.Polynomial{T}}, target::Vector{FP.Polynomial{T}}) where {T<:Number}
+        @assert length(start) == length(target) "Expected the same number of polynomials, but got $(length(start)) and $(length(target))"
+
+        s_nvars = maximum(FP.nvariables.(start))
+        @assert all(s_nvars .== FP.nvariables.(start)) "Not all polynomials of the start system have $(s_nvars) variables."
+
+        t_nvars = maximum(FP.nvariables.(target))
+        @assert all(t_nvars .== FP.nvariables.(target)) "Not all polynomials of the target system have $(t_nvars) variables."
+
+        @assert s_nvars == t_nvars "Expected start and target system to have the same number of variables, but got $(s_nvars) and $(t_nvars)."
+        new(start, target)
+    end
+
+    function StraightLineHomotopy{T}(
+        start::Vector{FP.Polynomial{U}},
+        target::Vector{FP.Polynomial{V}}
+        ) where {T<:Number, U<:Number, V<:Number}
+        StraightLineHomotopy{T}(
+            convert(Vector{FP.Polynomial{T}}, start),
+            convert(Vector{FP.Polynomial{T}}, target))
+    end
+
+    function StraightLineHomotopy{T}(
+        start::MP.AbstractPolynomial,
+        target::MP.AbstractPolynomial) where {T<:Number}
+        s, t = convert(Vector{FP.Polynomial{T}}, [start, target])
+        StraightLineHomotopy{T}([s], [t])
+    end
+
+    function StraightLineHomotopy{T}(
+        start::Vector{<:MP.AbstractPolynomial},
+        target::Vector{<:MP.AbstractPolynomial}) where {T<:Number}
+        StraightLineHomotopy{T}(
+            convert(Vector{FP.Polynomial{T}}, start),
+            convert(Vector{FP.Polynomial{T}}, target))
+    end
+end
+
+#
+# CONSTRUCTORS
+#
+function StraightLineHomotopy(
+    start::Vector{FP.Polynomial{T}},
+    target::Vector{FP.Polynomial{S}}) where {T<:Number, S<:Number}
+    StraightLineHomotopy{promote_type(S,T)}(start,target)
+end
+function StraightLineHomotopy(
+    start::Vector{<:MP.AbstractPolynomial{T}},
+    target::Vector{<:MP.AbstractPolynomial{S}}) where {T<:Number, S<:Number}
+    P = promote_type(S, T)
+    StraightLineHomotopy{P}(
+        convert(Vector{FP.Polynomial{T}}, start),
+        convert(Vector{FP.Polynomial{T}}, target))
+end
+function StraightLineHomotopy(
+    start::MP.AbstractPolynomial{T},
+    target::MP.AbstractPolynomial{S}) where {T,S}
+    U = promote_type(S, T)
+    s, t = convert(Vector{FP.Polynomial{U}}, [start, target])
+    StraightLineHomotopy{U}([s], [t])
+end
+
+#
+# SHOW
+#
+function Base.show(io::IO, H::StraightLineHomotopy)
+    start = join(string.(H.start), ", ")
+    target = join(string.(H.target), ", ")
+    println(io, typeof(H), "(", "(1-t)⋅[", target, "] + t⋅[", start , "]", ")")
+end
+
+#
+# EQUALITY
+#
+function ==(H1::StraightLineHomotopy, H2::StraightLineHomotopy)
+    H1.start == H2.start && H1.target == H2.target
+end
+function Base.isequal(H1::StraightLineHomotopy, H2::StraightLineHomotopy)
+    Base.isequal(H1.start, H2.start) && Base.isequal(H1.target, H2.target)
+end
+
+#
+# PROMOTION AND CONVERSION
+#
+function Base.promote_type(
+    ::Type{StraightLineHomotopy{T}},
+    ::Type{StraightLineHomotopy{S}}) where {S<:Number,T<:Number}
+    StraightLineHomotopy{promote_type(T,S)}
+end
+
+function Base.convert(
+    ::Type{StraightLineHomotopy{T}},
+    H::StraightLineHomotopy) where {T}
+    StraightLineHomotopy{T}(H.start, H.target)
+end
+
+#
+# EVALUATION + DIFFERENTATION
+#
+function evaluate!(u::Vector{T}, H::StraightLineHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
+    map!(u, H.target, H.start) do f, g
+        (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
+    end
+end
+function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
+    evaluate!(zeros(H.target, T), H, x,  t)
+end
+(H::StraightLineHomotopy)(x,t) = evaluate(H,x,t)
+
+function differentiate(F::Vector{FP.Polynomial{T}}) where {T<:Number}
+    [FP.differentiate(f, i) for f in F, i=1:FP.nvariables.(F[1])]
+end
+function jacobian!(H::StraightLineHomotopy{T}) where {T<:Number}
+    J_start = differentiate(H.start)
+    J_target = differentiate(H.target)
+
+    function (u, x, t)
+        map!(u, J_target, J_start) do f, g
+            (1 - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
+        end
+    end
+end
+function jacobian(H::StraightLineHomotopy{T}) where {T<:Number}
+    J_start = differentiate(H.start)
+    J_target = differentiate(H.target)
+
+    function (x, t)
+        map(J_target, J_start) do f, g
+            (1 - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
+        end
+    end
+end
+
+function dt!(H::StraightLineHomotopy{T}) where {T<:Number}
+    function (u, x, ::Number)
+        map!(u, H.target, H.start) do f, g
+            FP.evaluate(g, x) - FP.evaluate(f, x)
+        end
+     end
+end
+function dt(H::StraightLineHomotopy{T}) where {T<:Number}
+    function (x, ::Number)
+        map(H.target, H.start) do f, g
+            FP.evaluate(g, x) - FP.evaluate(f, x)
+        end
+     end
+end
+
+function homogenize(H::StraightLineHomotopy)
+    typeof(H)(FP.homogenize.(H.start), FP.homogenize.(H.target))
+end
+function dehomogenize(H::StraightLineHomotopy)
+    typeof(H)(FP.dehomogenize.(H.start), FP.dehomogenize.(H.target))
+end
+
+function ishomogenized(H::StraightLineHomotopy)
+    all(FP.ishomogenized.(H.start)) && all(FP.ishomogenized.(H.target))
+end
+function ishomogenous(H::StraightLineHomotopy)
+    all(FP.ishomogenous.(H.start)) && all(FP.ishomogenous.(H.target))
+end
+
+nvariables(H::StraightLineHomotopy) = nvariables(H.start[1])
+Base.length(H::StraightLineHomotopy) = length(H.start)
+
+
+#
+# """
+#     weylnorm(H, t)
+#
+# Computes the weyl norm of the homotopy `H` to the given time `t`.
+#
+# ## Explanation
+# For ``H = (1-t)F+tG`` we have
+# ```math
+# \begin{align*}
+# <H,H> &= <(1-t)F+tG,(1-t)F+tG> \\
+#       &= <(1-t)F,(1-t)F+tG> + <tG,(1-t)F+tG> \\
+#       &= <(1-t)F,(1-t)F> + <(1-t)F,tG> + <tG,(1-t)F> + <tG,tG> \\
+#       &= <(1-t)F,(1-t)F> + 2real(<(1-t)F,tG>) + <tG,tG> \\
+#       &= |1-t|^2<F,F> + 2(t-|t|^2)real(<F,G>) + |t|^2<G,G> \\
+# \end{align*}
+# ```
+# """
+# function weylnorm(H::StraightLineHomotopy{T}, t::Number) where {T<:Complex}
+#     F = H.target
+#     G = H.start
+#
+#     a = abs2(one(T) - t)
+#     sqrt(a * FP.weyldot(F,F) + 2 * (t - a) * real(FP.weyldot(F,G)) + abs2(t) * FP.weyldot(G,G))
+# end
