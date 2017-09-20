@@ -6,6 +6,7 @@ makedocs(
     pages = [
         "Introduction" => "index.md",
         "Interface" => "interface.md",
+        "Higher level constructs" => "higherlevelconstructs.md"
         ]
 )
 

@@ -142,3 +142,26 @@ end
     @test length(H) == 1
     @test nvariables(H) == 3
 end
+
+@testset "Total degree" begin
+    @polyvar x y
+
+    H, solutions = totaldegree(StraightLineHomotopy{Complex128}, [x^2+y+1, x^3*y-2])
+    @test length(solutions) == 8
+    @test eltype(solutions) == Vector{Complex128}
+    for sol in solutions
+        @test norm(H(sol, 1.0)) ≈ 0 atol=1e-14
+    end
+    H, solutions = totaldegree(StraightLineHomotopy{Complex128}, [x^2+y+1, x^3*y-2], unitroots=true)
+    for sol in solutions
+        @test norm(sol) ≈ norm(ones(2)) atol=1e-14
+    end
+
+    H, solutions = totaldegree(GammaTrickHomotopy{Complex128}, [x^2+y+1, x^3*y-2])
+    for sol in solutions
+        @test norm(H(sol, 1.0)) ≈ 0 atol=1e-14
+    end
+
+    H, sols = totaldegree(GammaTrickHomotopy, [x^2+y+1, x^3*y-2])
+    @test H isa GammaTrickHomotopy{Complex128}
+end

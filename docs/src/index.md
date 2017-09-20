@@ -4,14 +4,9 @@
 
 Each implemented homotopy has the same [Interface](@ref) so that you can switch easily between
 different homotopy types.
+Based on this interface there are also some convenient [higher level constructs](@ref higherlevelconstructs) provided, e.g. the
+construction of a total degree system and its start solutions.
 
-## Homotopies
-
-The following homotopies are implemented
-```@docs
-StraightLineHomotopy
-GammaTrickHomotopy
-```
 
 ## Example
 ```julia
@@ -31,4 +26,13 @@ H = StraightLineHomotopy{Complex128}([x + y^3, x^2*y-2y], [x^3+2, y^3+2])
 evaluate(H, rand(Complex128, 2), 0.42)
 # or alternatively
 H(rand(Complex128, 2), 0.42)
+```
+
+
+## Homotopies
+
+The following homotopies are implemented
+```@docs
+StraightLineHomotopy
+GammaTrickHomotopy
 ```
