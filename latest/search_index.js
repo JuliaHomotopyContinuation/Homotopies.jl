@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Homotopy.StraightLineHomotopy",
     "category": "Type",
-    "text": "StraightLineHomotopy(start, target)\n\nConstruct the homotopy t * start + (1-t) * target.\n\nstart and target have to match and to be one of the following\n\nVector{<:MP.AbstractPolynomial} where MP is MultivariatePolynomials\nMP.AbstractPolynomial\nVector{<:FP.Polynomial} where FP is FixedPolynomials\nStraightLineHomotopy{T}(start, target)\n\nYou can also force a specific coefficient type T.\n\n\n\n"
+    "text": "StraightLineHomotopy(start, target)\n\nConstruct the homotopy t * start + (1-t) * target.\n\nstart and target have to match and to be one of the following\n\nVector{<:MP.AbstractPolynomial} where MP is MultivariatePolynomials\nMP.AbstractPolynomial\nVector{<:FP.Polynomial} where FP is FixedPolynomials\n\nStraightLineHomotopy{T}(start, target)\n\nYou can also force a specific coefficient type T.\n\n\n\n"
 },
 
 {
@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Introduction",
     "title": "Homotopy.GammaTrickHomotopy",
     "category": "Type",
-    "text": "GammaTrickHomotopy(start, target, [γ])\n\nConstruct the homotopy (1-t)⋅target + t⋅γ⋅start. If γ is not supplied it will be drawn randomly and uniformly from the complex unit circle.\n\nstart and target have to match and to be one of the following\n\nVector{<:MP.AbstractPolynomial} where MP is MultivariatePolynomials\nMP.AbstractPolynomial\nVector{<:FP.Polynomial} where FP is FixedPolynomials\nGammaTrickHomotopy(start, target, seed::Int)\n\nYou can also supply a seed for the RNG which is used to draw γ, i.e. subsequent invocations with the same seed will produce the same γ.\n\nGammaTrickHomotopy{T}(start, target, [γ])\nGammaTrickHomotopy{T}(start, target, seed::Int)\n\nYou can also force a specific coefficient type T.\n\n\n\n"
+    "text": "GammaTrickHomotopy(start, target, [γ])\n\nConstruct the homotopy (1-t)⋅target + t⋅γ⋅start. If γ is not supplied it will be drawn randomly and uniformly from the complex unit circle.\n\nstart and target have to match and to be one of the following\n\nVector{<:MP.AbstractPolynomial} where MP is MultivariatePolynomials\nMP.AbstractPolynomial\nVector{<:FP.Polynomial} where FP is FixedPolynomials\n\nGammaTrickHomotopy(start, target, seed::Int)\n\nYou can also supply a seed for the RNG which is used to draw γ, i.e. subsequent invocations with the same seed will produce the same γ.\n\nGammaTrickHomotopy{T}(start, target, [γ])\nGammaTrickHomotopy{T}(start, target, seed::Int)\n\nYou can also force a specific coefficient type T.\n\n\n\n"
 },
 
 {
