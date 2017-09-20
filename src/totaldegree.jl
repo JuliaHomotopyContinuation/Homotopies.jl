@@ -15,7 +15,7 @@ of the system
 ```
 where ``d_i`` is `degrees[i]` and ``b_i`` is `b[i]`.
 """
-struct TotalDegreeSolutionIterator{T<:Complex, Iter<:Iterators.AbstractProdIterator}
+struct TotalDegreeSolutionIterator{T<:Complex, Iter}
     degrees::Vector{Int}
     b::Vector{T}
 
