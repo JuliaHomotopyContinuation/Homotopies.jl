@@ -118,7 +118,7 @@ end
 #
 # EVALUATION + DIFFERENTATION
 #
-function evaluate!(u::Vector{T}, H::StraightLineHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
+function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
     map!(u, H.target, H.start) do f, g
         (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
     end
