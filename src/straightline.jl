@@ -137,7 +137,7 @@ function jacobian!(H::StraightLineHomotopy{T}) where {T<:Number}
 
     function (u, x, t)
         map!(u, J_target, J_start) do f, g
-            (1 - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
+            (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
         end
     end
 end
@@ -147,7 +147,7 @@ function jacobian(H::StraightLineHomotopy{T}) where {T<:Number}
 
     function (x, t)
         map(J_target, J_start) do f, g
-            (1 - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
+            (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
         end
     end
 end
