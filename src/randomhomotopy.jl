@@ -1,7 +1,7 @@
 export randomhomotopy, randomsystem
 
 """
-    randomhomotopy(::Type{AbstractHomotopy{T}}, size::Int; kwargs...)
+    randomhomotopy(::Type{AbstractPolynomialHomotopy{T}}, size::Int; kwargs...)
 
 Create a total degree homotopy where the target system is a [`randomsystem(T, size, size; kwargs...)`](@ref).
 
@@ -14,11 +14,11 @@ julia> nvariables(H)
 3
 ```
 """
-function randomhomotopy(H::Type{<:AbstractHomotopy{T}}, size::Int; kwargs...) where {T<:Complex}
+function randomhomotopy(H::Type{<:AbstractPolynomialHomotopy{T}}, size::Int; kwargs...) where {T<:Complex}
     F = randomsystem(T, size, size; kwargs...)
     totaldegree(H, F)
 end
-function randomhomotopy(H::Type{<:AbstractHomotopy}, size::Int; kwargs...)
+function randomhomotopy(H::Type{<:AbstractPolynomialHomotopy}, size::Int; kwargs...)
     F = randomsystem(size, size; kwargs...)
     totaldegree(H, F)
 end

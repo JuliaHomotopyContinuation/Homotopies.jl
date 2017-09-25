@@ -51,7 +51,7 @@ Compute an inplace evaluation function `(u, x, t) -> u := ∂H∂t(x,t)` of the 
 function dt! end
 
 """
-    nvariables(H::AbstractHomotopy)
+    nvariables(H::AbstractPolynomialHomotopy)
 
 The number of variables which `H` expects as input, i.e. to evaluate `H(x,t)` `x` has to be a
 vector of length `nvariables(H)`.
@@ -59,7 +59,7 @@ vector of length `nvariables(H)`.
 function nvariables end
 
 """
-    homogenize(H::AbstractHomotopy)
+    homogenize(H::AbstractPolynomialHomotopy)
 
 Homogenize the homotopy `H`. This adds an additional variable.
 If `H` is already homogenized, this is the identity.
@@ -67,7 +67,7 @@ If `H` is already homogenized, this is the identity.
 function homogenize end
 
 """
-    dehomogenize(H::AbstractHomotopy)
+    dehomogenize(H::AbstractPolynomialHomotopy)
 
 Dehomogenize the homotopy `H`. This removes the first variable.
 If `H` is not homogenized, this is the identity.
@@ -75,14 +75,14 @@ If `H` is not homogenized, this is the identity.
 function dehomogenize end
 
 """
-    ishomogenized(H::AbstractHomotopy)
+    ishomogenized(H::AbstractPolynomialHomotopy)
 
 Check whether the homotopy `H` was homogenized.
 """
 function ishomogenized end
 
 """
-    ishomogenous(H::AbstractHomotopy)
+    ishomogenous(H::AbstractPolynomialHomotopy)
 
 Check whether the homotopy `H` is homogenous. This does not imply that `H` was homogenized.
 """
