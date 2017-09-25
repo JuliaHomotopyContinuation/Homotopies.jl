@@ -165,7 +165,7 @@ end
 #
 # EVALUATION + DIFFERENTATION
 #
-function evaluate!(u::Vector{T}, H::GammaTrickHomotopy{T}, x::Vector{T}, t::Number) where {T<:Complex}
+function evaluate!(u::AbstractVector{T}, H::GammaTrickHomotopy{T}, x::Vector{T}, t::Number) where {T<:Complex}
     map!(u, H.target, H.start) do f, g
         (one(T) - t) * FP.evaluate(f, x) + t * H.γ * FP.evaluate(g, x)
     end
