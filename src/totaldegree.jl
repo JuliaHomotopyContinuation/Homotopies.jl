@@ -41,7 +41,7 @@ Base.length(iter::TotalDegreeSolutionIterator) = length(iter.iterator)
 Base.eltype(iter::TotalDegreeSolutionIterator{T}) where {T} = Vector{T}
 
 """
-    totaldegree(H::Type{AbstractHomotopy}, F, [unitroots=false])
+    totaldegree(H::Type{AbstractPolynomialHomotopy}, F, [unitroots=false])
 
 Construct a  total degree homotopy of type `H` with `F` and an iterator of its solutions.
 This is the homotopy with start system
@@ -62,16 +62,16 @@ complex number (with real and imaginary part in the unit interval).
 H, startsolutions = totaldegree(StraightLineHomotopy{Complex128}, [x^2+y+1, x^3*y-2])
 ```
 """
-function totaldegree(H::Type{<:AbstractHomotopy{T}}, fs::Vector{<:MP.AbstractPolynomial{U}}; kwargs...) where {T<:Complex, U<:Number}
+function totaldegree(H::Type{<:AbstractPolynomialHomotopy{T}}, fs::Vector{<:MP.AbstractPolynomial{U}}; kwargs...) where {T<:Complex, U<:Number}
     F = convert(Vector{FP.Polynomial{T}}, fs)
     totaldegree(H, F; kwargs...)
 end
-function totaldegree(H::Type{<:AbstractHomotopy}, fs::Vector{<:MP.AbstractPolynomial{U}}; kwargs...) where {U<:Number}
+function totaldegree(H::Type{<:AbstractPolynomialHomotopy}, fs::Vector{<:MP.AbstractPolynomial{U}}; kwargs...) where {U<:Number}
     F = convert(Vector{FP.Polynomial{promote_type(Complex128, U)}}, fs)
     totaldegree(H, F; kwargs...)
 end
 
-function totaldegree(H::Type{<:AbstractHomotopy}, F::Vector{FP.Polynomial{U}}; kwargs...) where {U<:Number}
+function totaldegree(H::Type{<:AbstractPolynomialHomotopy}, F::Vector{FP.Polynomial{U}}; kwargs...) where {U<:Number}
     G, solutions = totaldegree_startsystem(F; kwargs...)
     H(G, F), solutions
 end
