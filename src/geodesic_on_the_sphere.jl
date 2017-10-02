@@ -1,9 +1,11 @@
-export StraightLineHomotopy
+export GeodesicOnTheSphere
 
 """
-    StraightLineHomotopy(start, target)
+    GeodesicOnTheSphere(start, target)
 
-Construct the homotopy `t * start + (1-t) * target`.
+Homotopy is the geodesic from g=start/|start| (t=1) to f=target/|target| (t=0):
+H(x,t) = (cos(tα) - sin (tα)cos(α)) f + sin(tα) g,
+where α = cos <f,g>.
 
 `start` and `target` have to match and to be one of the following
 * `Vector{<:MP.AbstractPolynomial}` where `MP` is [`MultivariatePolynomials`](https://github.com/blegat/MultivariatePolynomials.jl)
@@ -11,15 +13,15 @@ Construct the homotopy `t * start + (1-t) * target`.
 * `Vector{<:FP.Polynomial}` where `FP` is [`FixedPolynomials`](https://github.com/saschatimme/FixedPolynomials.jl)
 
 
-    StraightLineHomotopy{T}(start, target)
+    GeodesicOnTheSphere{T}(start, target)
 
 You can also force a specific coefficient type `T`.
 """
-struct StraightLineHomotopy{T<:Number} <: AbstractPolynomialHomotopy{T}
+struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
     start::Vector{FP.Polynomial{T}}
     target::Vector{FP.Polynomial{T}}
 
-    function StraightLineHomotopy{T}(start::Vector{FP.Polynomial{T}}, target::Vector{FP.Polynomial{T}}) where {T<:Number}
+    function GeodesicOnTheSphere{T}(start::Vector{FP.Polynomial{T}}, target::Vector{FP.Polynomial{T}}) where {T<:Number}
         @assert length(start) == length(target) "Expected the same number of polynomials, but got $(length(start)) and $(length(target))"
 
         s_nvars = maximum(FP.nvariables.(start))
@@ -30,28 +32,29 @@ struct StraightLineHomotopy{T<:Number} <: AbstractPolynomialHomotopy{T}
 
         @assert s_nvars == t_nvars "Expected start and target system to have the same number of variables, but got $(s_nvars) and $(t_nvars)."
         new(start, target)
+
     end
 
-    function StraightLineHomotopy{T}(
+    function GeodesicOnTheSphere{T}(
         start::Vector{FP.Polynomial{U}},
         target::Vector{FP.Polynomial{V}}
         ) where {T<:Number, U<:Number, V<:Number}
-        StraightLineHomotopy{T}(
+        GeodesicOnTheSphere{T}(
             convert(Vector{FP.Polynomial{T}}, start),
             convert(Vector{FP.Polynomial{T}}, target))
     end
 
-    function StraightLineHomotopy{T}(
+    function GeodesicOnTheSphere{T}(
         start::MP.AbstractPolynomial,
         target::MP.AbstractPolynomial) where {T<:Number}
         s, t = convert(Vector{FP.Polynomial{T}}, [start, target])
-        StraightLineHomotopy{T}([s], [t])
+        GeodesicOnTheSphere{T}([s], [t])
     end
 
-    function StraightLineHomotopy{T}(
+    function GeodesicOnTheSphere{T}(
         start::Vector{<:MP.AbstractPolynomial},
         target::Vector{<:MP.AbstractPolynomial}) where {T<:Number}
-        StraightLineHomotopy{T}(
+        GeodesicOnTheSphere{T}(
             convert(Vector{FP.Polynomial{T}}, start),
             convert(Vector{FP.Polynomial{T}}, target))
     end
@@ -60,43 +63,46 @@ end
 #
 # CONSTRUCTORS
 #
-function StraightLineHomotopy(
+function GeodesicOnTheSphere(
     start::Vector{FP.Polynomial{T}},
     target::Vector{FP.Polynomial{S}}) where {T<:Number, S<:Number}
-    StraightLineHomotopy{promote_type(S,T)}(start,target)
+    GeodesicOnTheSphere{promote_type(S,T)}(start,target)
 end
-function StraightLineHomotopy(
+function GeodesicOnTheSphere(
     start::Vector{<:MP.AbstractPolynomial{T}},
     target::Vector{<:MP.AbstractPolynomial{S}}) where {T<:Number, S<:Number}
     P = promote_type(S, T)
-    StraightLineHomotopy{P}(
+    GeodesicOnTheSphere{T}(
         convert(Vector{FP.Polynomial{T}}, start),
         convert(Vector{FP.Polynomial{T}}, target))
 end
-function StraightLineHomotopy(
+function GeodesicOnTheSphere(
     start::MP.AbstractPolynomial{T},
     target::MP.AbstractPolynomial{S}) where {T,S}
     U = promote_type(S, T)
-    s, t = convert(Vector{FP.Polynomial{U}}, [start, target])
-    StraightLineHomotopy{U}([s], [t])
+    s, t = convert(Vector{FP.Polynomial{T}}, [start, target])
+    GeodesicOnTheSphere{T}([s], [t])
 end
 
 #
 # SHOW
 #
-function Base.show(io::IO, H::StraightLineHomotopy)
+function Base.show(io::IO, H::GeodesicOnTheSphere)
     start = join(string.(H.start), ", ")
     target = join(string.(H.target), ", ")
-    println(io, typeof(H), "(", "(1-t)⋅[", target, "] + t⋅[", start , "]", ")")
+    println(io, typeof(H),
+    " The homotopy is given by the spherical geodesic from start/|start| (t=1) to target/|target| (t=0). ",
+    "Here: target = [", target, "], start = [", start,"].")
 end
+
 
 #
 # EQUALITY
 #
-function ==(H1::StraightLineHomotopy, H2::StraightLineHomotopy)
+function ==(H1::GeodesicOnTheSphere, H2::GeodesicOnTheSphere)
     H1.start == H2.start && H1.target == H2.target
 end
-function Base.isequal(H1::StraightLineHomotopy, H2::StraightLineHomotopy)
+function Base.isequal(H1::GeodesicOnTheSphere, H2::GeodesicOnTheSphere)
     Base.isequal(H1.start, H2.start) && Base.isequal(H1.target, H2.target)
 end
 
@@ -104,97 +110,125 @@ end
 # PROMOTION AND CONVERSION
 #
 function Base.promote_rule(
-    ::Type{StraightLineHomotopy{T}},
-    ::Type{StraightLineHomotopy{S}}) where {S<:Number,T<:Number}
-    StraightLineHomotopy{promote_type(T,S)}
+    ::Type{GeodesicOnTheSphere{T}},
+    ::Type{GeodesicOnTheSphere{S}}) where {S<:Number,T<:Number}
+    GeodesicOnTheSphere{promote_type(T,S)}
 end
 
 function Base.convert(
-    ::Type{StraightLineHomotopy{T}},
-    H::StraightLineHomotopy) where {T}
-    StraightLineHomotopy{T}(H.start, H.target)
+    ::Type{GeodesicOnTheSphere{T}},
+    H::GeodesicOnTheSphere) where {T}
+    GeodesicOnTheSphere{T}(H.start, H.target)
 end
 
 #
 # EVALUATION + DIFFERENTATION
 #
-function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
+function evaluate!(u::AbstractVector{T}, H::GeodesicOnTheSphere{T}, x::Vector{T}, t::Number) where {T<:Number}
+    inverse_norm_start = one(T)/FP.weylnorm(H.start)
+    inverse_norm_target = one(T)/FP.weylnorm(H.target)
+    α=acos(FP.weyldot(H.start,H.target)  * inverse_norm_start * inverse_norm_target)
+    λ_1 = sin(t*α)/sin(α)
+    λ_2 = cos(t*α) - λ_1*cos(α)
+
     map!(u, H.target, H.start) do f, g
-        (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
+        inverse_norm_start * λ_1 * FP.evaluate(g, x) + inverse_norm_target * λ_2 * FP.evaluate(f, x)
     end
 end
+
 function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
     evaluate!(zeros(H.target, T), H, x,  t)
 end
-(H::StraightLineHomotopy)(x,t) = evaluate(H,x,t)
+(H::GeodesicOnTheSphere)(x,t) = evaluate(H,x,t)
 
 
-function weylnorm(H::StraightLineHomotopy{T})  where {T<:Number}
-    λ_1=FP.weyldot(H.target,H.target)
-    λ_2=real(FP.weyldot(H.target,H.start))
-    λ_3=FP.weyldot(H.start,H.start)
-
+function weylnorm(H::GeodesicOnTheSphere{T})  where {T<:Number}
     function (t)
-        sqrt((one(T) - t)^2 * λ_1 + 2*(one(T) - t)*t*λ_2 + t^2 * λ_3)
-    end
+         1
+     end
 end
 
 
 function differentiate(F::Vector{FP.Polynomial{T}}) where {T<:Number}
     [FP.differentiate(f, i) for f in F, i=1:FP.nvariables.(F[1])]
 end
-function jacobian!(H::StraightLineHomotopy{T}) where {T<:Number}
+
+
+
+function jacobian!(H::GeodesicOnTheSphere{T}) where {T<:Number}
     J_start = differentiate(H.start)
     J_target = differentiate(H.target)
+    inverse_norm_start = one(T)/FP.weylnorm(H.start)
+    inverse_norm_target = one(T)/FP.weylnorm(H.target)
+    α=acos(FP.weyldot(H.start,H.target)  * inverse_norm_start * inverse_norm_target)
 
     function (u, x, t)
+        λ_1 = sin(t*α)/sin(α)
+        λ_2 = cos(t*α) - λ_1*cos(α)
         map!(u, J_target, J_start) do f, g
-            (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
+                    inverse_norm_start * λ_1 * FP.evaluate(g, x) + inverse_norm_target * λ_2 * FP.evaluate(f, x)
         end
     end
 end
-function jacobian(H::StraightLineHomotopy{T}) where {T<:Number}
+function jacobian(H::GeodesicOnTheSphere{T}) where {T<:Number}
     J_start = differentiate(H.start)
     J_target = differentiate(H.target)
+    inverse_norm_start = one(T)/FP.weylnorm(H.start)
+    inverse_norm_target = one(T)/FP.weylnorm(H.target)
+    α=acos(FP.weyldot(H.start,H.target)  * inverse_norm_start * inverse_norm_target)
 
     function (x, t)
+        λ_1 = sin(t*α)/sin(α)
+        λ_2 = cos(t*α) - λ_1*cos(α)
         map(J_target, J_start) do f, g
-            (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
+            inverse_norm_start * λ_1 * FP.evaluate(g, x) + inverse_norm_target * λ_2 * FP.evaluate(f, x)
         end
     end
 end
 
-function dt!(H::StraightLineHomotopy{T}) where {T<:Number}
-    function (u, x, ::Number)
+function dt!(H::GeodesicOnTheSphere{T}) where {T<:Number}
+    inverse_norm_start = one(T)/FP.weylnorm(H.start)
+    inverse_norm_target = one(T)/FP.weylnorm(H.target)
+    α=acos(FP.weyldot(H.start,H.target)  * inverse_norm_start * inverse_norm_target)
+
+    function (u, x, t)
+        λ_1_dot = t * cos(t*α)/sin(α)
+        λ_2_dot = - t * sin(t*α) - λ_1_dot*cos(α)
         map!(u, H.target, H.start) do f, g
-            FP.evaluate(g, x) - FP.evaluate(f, x)
+            inverse_norm_start * λ_1_dot * FP.evaluate(g, x) + inverse_norm_target * λ_2_dot * FP.evaluate(f, x)
         end
      end
 end
-function dt(H::StraightLineHomotopy{T}) where {T<:Number}
-    function (x, ::Number)
+function dt(H::GeodesicOnTheSphere{T}) where {T<:Number}
+    inverse_norm_start = one(T)/FP.weylnorm(H.start)
+    inverse_norm_target = one(T)/FP.weylnorm(H.target)
+    α=acos(FP.weyldot(H.start,H.target)  * inverse_norm_start * inverse_norm_target)
+
+    function (x, t)
+        λ_1_dot = t * cos(t*α)/sin(α)
+        λ_2_dot = - t * sin(t*α) - λ_1_dot*cos(α)
         map(H.target, H.start) do f, g
-            FP.evaluate(g, x) - FP.evaluate(f, x)
+            inverse_norm_start * λ_1_dot * FP.evaluate(g, x) + inverse_norm_target * λ_2_dot * FP.evaluate(f, x)
         end
      end
 end
 
-function homogenize(H::StraightLineHomotopy)
+function homogenize(H::GeodesicOnTheSphere)
     typeof(H)(FP.homogenize.(H.start), FP.homogenize.(H.target))
 end
-function dehomogenize(H::StraightLineHomotopy)
+function dehomogenize(H::GeodesicOnTheSphere)
     typeof(H)(FP.dehomogenize.(H.start), FP.dehomogenize.(H.target))
 end
 
-function ishomogenized(H::StraightLineHomotopy)
+function ishomogenized(H::GeodesicOnTheSphere)
     all(FP.ishomogenized.(H.start)) && all(FP.ishomogenized.(H.target))
 end
-function ishomogenous(H::StraightLineHomotopy)
+function ishomogenous(H::GeodesicOnTheSphere)
     all(FP.ishomogenous.(H.start)) && all(FP.ishomogenous.(H.target))
 end
 
-nvariables(H::StraightLineHomotopy) = FP.nvariables(H.start[1])
-Base.length(H::StraightLineHomotopy) = length(H.start)
+nvariables(H::GeodesicOnTheSphere) = FP.nvariables(H.start[1])
+Base.length(H::GeodesicOnTheSphere) = length(H.start)
 
 
 #
@@ -215,7 +249,7 @@ Base.length(H::StraightLineHomotopy) = length(H.start)
 # \end{align*}
 # ```
 # """
-# function weylnorm(H::StraightLineHomotopy{T}, t::Number) where {T<:Complex}
+# function weylnorm(H::GeodesicOnTheSphere{T}, t::Number) where {T<:Complex}
 #     F = H.target
 #     G = H.start
 #

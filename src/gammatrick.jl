@@ -175,6 +175,18 @@ function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{T}, t::Number) whe
 end
 (H::GammaTrickHomotopy)(x,t) = evaluate(H,x,t)
 
+
+function weylnorm(H::GammaTrickHomotopy{T})  where {T<:Number}
+    λ_1=FP.weyldot(H.target,H.target)
+    λ_2=real(FP.weyldot(H.target,H.start)*H.γ)
+    λ_3=FP.weyldot(H.start,H.start)
+
+    function (t)
+        float64(sqrt((one(T) - t)^2 * λ_1 + 2*(one(T) - t)*t*λ_2 + t^2 * abs(H.γ)^2 *  λ_3))
+    end
+end
+
+
 function differentiate(F::Vector{FP.Polynomial{T}}) where {T<:Complex}
     [FP.differentiate(f, i) for f in F, i=1:FP.nvariables.(F[1])]
 end
