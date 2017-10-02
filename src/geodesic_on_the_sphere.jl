@@ -141,6 +141,14 @@ function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{T}, t::Number) whe
 end
 (H::GeodesicOnTheSphere)(x,t) = evaluate(H,x,t)
 
+
+function weylnorm(H::GeodesicOnTheSphere{T})  where {T<:Number}
+    function (t)
+         1
+     end
+end
+
+
 function differentiate(F::Vector{FP.Polynomial{T}}) where {T<:Number}
     [FP.differentiate(f, i) for f in F, i=1:FP.nvariables.(F[1])]
 end
