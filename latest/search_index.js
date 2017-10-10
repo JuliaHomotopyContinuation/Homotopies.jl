@@ -185,11 +185,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "interface.html#Homotopy.weylnorm",
+    "page": "Interface",
+    "title": "Homotopy.weylnorm",
+    "category": "Function",
+    "text": "weylnorm(H::AbstractHomotopy)\n\nCreates a function with variable t that computes the Weyl norm (or Bombieri norm) of H(xt). See here for details about the Weyl norm.\n\n\n\n"
+},
+
+{
     "location": "interface.html#Misc-1",
     "page": "Interface",
     "title": "Misc",
     "category": "section",
-    "text": "nvariables"
+    "text": "nvariables\nweylnorm"
 },
 
 {
