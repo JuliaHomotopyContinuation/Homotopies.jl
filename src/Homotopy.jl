@@ -12,8 +12,11 @@ module Homotopy
     export AbstractHomotopy, AbstractPolynomialHomotopy
 
     include("interface.jl")
+
     include("straightline.jl")
+    include("geodesic_on_the_sphere.jl")
     include("gammatrick.jl")
+
     include("totaldegree.jl")
     include("randomhomotopy.jl")
 end

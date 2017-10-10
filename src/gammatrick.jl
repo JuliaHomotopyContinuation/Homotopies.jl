@@ -175,6 +175,20 @@ function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{T}, t::Number) whe
 end
 (H::GammaTrickHomotopy)(x,t) = evaluate(H,x,t)
 
+
+function weylnorm(H::GammaTrickHomotopy{T})  where {T<:Number}
+    f=FP.homogenize.(H.start)
+    g=FP.homogenize.(H.target)
+    λ_1=FP.weyldot(f,f)
+    λ_2=real(FP.weyldot(f,g)*H.γ)
+    λ_3=FP.weyldot(g,g)
+
+    function (t)
+        Float64(sqrt((one(T) - t)^2 * λ_1 + 2*(one(T) - t)*t*λ_2 + t^2 * abs(H.γ)^2 *  λ_3))
+    end
+end
+
+
 function differentiate(F::Vector{FP.Polynomial{T}}) where {T<:Complex}
     [FP.differentiate(f, i) for f in F, i=1:FP.nvariables.(F[1])]
 end
@@ -235,29 +249,3 @@ end
 
 nvariables(H::GammaTrickHomotopy) = FP.nvariables(H.start[1])
 Base.length(H::GammaTrickHomotopy) = length(H.start)
-
-# """
-#     weylnorm(H, t)
-#
-# Computes the weyl norm of the homotopy `H` to the given time `t`.
-#
-# ## Explanation
-# For ``H = (1-t)F+tG`` we have
-# ```math
-# \begin{align*}
-# <H,H> &= <(1-t)F+tγG,(1-t)F+tγG> \\
-#       &= <(1-t)F,(1-t)F+tγG> + <tγG,(1-t)F+tγG> \\
-#       &= <(1-t)F,(1-t)F> + <(1-t)F,tγG> + <tγG,(1-t)F> + <tγG,tγG> \\
-#       &= <(1-t)F,(1-t)F> + 2real(<(1-t)F,tγG>) + <tγG,tγG> \\
-#       &= |1-t|^2<F,F> + 2real(γ(t-|t|^2)<F,G>) + |γ|^2|t|^2<G,G>
-# \end{align*}
-# ```
-# """
-# function weylnorm(H::GammaTrickHomotopy{T}, t::Number) where {T<:Complex}
-#     F = H.target
-#     G = H.start
-#
-#     a = abs2(one(T) - t)
-#
-#     sqrt(a * FP.weyldot(F,F) + 2 * real(H.γ * (t - a) * FP.weyldot(F,G)) + abs2(H.γ) * abs2(t) * FP.weyldot(G,G))
-# end
