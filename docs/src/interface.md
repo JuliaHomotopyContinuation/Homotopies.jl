@@ -25,4 +25,5 @@ ishomogenous
 ## Misc
 ```@docs
 nvariables
+weylnorm
 ```
