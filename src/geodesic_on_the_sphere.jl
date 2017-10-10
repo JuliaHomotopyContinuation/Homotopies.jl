@@ -157,9 +157,9 @@ end
 (H::GeodesicOnTheSphere)(x,t) = evaluate(H,x,t)
 
 
-function weylnorm(H::GeodesicOnTheSphere{T})  where {T<:Number}
+function weylnorm(H::GeodesicOnTheSphere{Complex{T}})  where {T<:Real}
     function (t)
-         1.0
+         one(T)
      end
 end
 
