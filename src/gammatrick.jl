@@ -184,7 +184,7 @@ function weylnorm(H::GammaTrickHomotopy{T})  where {T<:Number}
     λ_3 = FP.weyldot(g,g)
 
     function (t)
-        sqrt(abs2(one(T) - t) * λ_1 + 2 * real((one(T) - t) * t * H.γ * λ_2) + abs2(t) * abs2(H.γ) * λ_3)
+        sqrt(abs2(one(T) - t) * λ_1 + 2 * real((one(T) - t) * conj(t * H.γ) * λ_2) + abs2(t) * abs2(H.γ) * λ_3)
     end
 end
 
