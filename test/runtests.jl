@@ -128,7 +128,7 @@ end
     HDT! = dt!(H)
     HDT!(u, [1+0im, 2, 2.0], 1.0)
     @test u == H.γ * [7, 3] - [7, 4]
-    @test string(H) == "Homotopy.GammaTrickHomotopy{Complex{Float64}}((1-t)⋅[x+y+2.0z, y+z] + t⋅[x+y+2.0z, x+z])\n"
+    @test string(H) == "Homotopy.GammaTrickHomotopy{Complex{Float64}}((1-t)⋅[x+y+2.0z, y+z] + t⋅$(H.γ)⋅[x+y+2.0z, x+z])\n"
 
     N=weylnorm(H)
     @test N(0.0)==sqrt(8)
