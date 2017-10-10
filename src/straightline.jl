@@ -130,14 +130,14 @@ end
 
 
 function weylnorm(H::StraightLineHomotopy{T})  where {T<:Number}
-    f=FP.homogenize.(H.start)
-    g=FP.homogenize.(H.target)
-    λ_1=FP.weyldot(f,f)
-    λ_2=real(FP.weyldot(f,g))
-    λ_3=FP.weyldot(g,g)
+    f = FP.homogenize.(H.start)
+    g = FP.homogenize.(H.target)
+    λ_1 = FP.weyldot(f,f)
+    λ_2 = real(FP.weyldot(f,g))
+    λ_3 = FP.weyldot(g,g)
 
     function (t)
-        Float64(sqrt((one(T) - t)^2 * λ_1 + 2*(one(T) - t)*t*λ_2 + t^2 *  λ_3))
+        Float64(sqrt((one(T) - t)^2 * λ_1 + 2 * (one(T) - t) * t * λ_2 + t^2 * λ_3))
     end
 end
 
@@ -197,30 +197,3 @@ end
 
 nvariables(H::StraightLineHomotopy) = FP.nvariables(H.start[1])
 Base.length(H::StraightLineHomotopy) = length(H.start)
-
-
-#
-# """
-#     weylnorm(H, t)
-#
-# Computes the weyl norm of the homotopy `H` to the given time `t`.
-#
-# ## Explanation
-# For ``H = (1-t)F+tG`` we have
-# ```math
-# \begin{align*}
-# <H,H> &= <(1-t)F+tG,(1-t)F+tG> \\
-#       &= <(1-t)F,(1-t)F+tG> + <tG,(1-t)F+tG> \\
-#       &= <(1-t)F,(1-t)F> + <(1-t)F,tG> + <tG,(1-t)F> + <tG,tG> \\
-#       &= <(1-t)F,(1-t)F> + 2real(<(1-t)F,tG>) + <tG,tG> \\
-#       &= |1-t|^2<F,F> + 2(t-|t|^2)real(<F,G>) + |t|^2<G,G> \\
-# \end{align*}
-# ```
-# """
-# function weylnorm(H::StraightLineHomotopy{T}, t::Number) where {T<:Complex}
-#     F = H.target
-#     G = H.start
-#
-#     a = abs2(one(T) - t)
-#     sqrt(a * FP.weyldot(F,F) + 2 * (t - a) * real(FP.weyldot(F,G)) + abs2(t) * FP.weyldot(G,G))
-# end

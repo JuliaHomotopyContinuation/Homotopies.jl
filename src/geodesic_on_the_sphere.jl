@@ -3,9 +3,9 @@ export GeodesicOnTheSphere
 """
     GeodesicOnTheSphere(start, target)
 
-Homotopy is the geodesic from g=start/|start| (t=1) to f=target/|target| (t=0):
-H(x,t) = (cos(tα) - sin (tα)cos(α)) f + sin(tα) g,
-where α = cos <f,g>.
+Homotopy is the geodesic from `g=start/|start|` (t=1) to `f=target/|target|`` (t=0):
+``H(x,t) = (cos(tα) - sin (tα)cos(α)) f + sin(tα) g``,
+where ``α = cos <f,g>``.
 
 `start` and `target` have to match and to be one of the following
 * `Vector{<:MP.AbstractPolynomial}` where `MP` is [`MultivariatePolynomials`](https://github.com/blegat/MultivariatePolynomials.jl)
@@ -22,7 +22,6 @@ struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
     target::Vector{FP.Polynomial{T}}
     α::Float64
 
-
     function GeodesicOnTheSphere{T}(start::Vector{FP.Polynomial{T}}, target::Vector{FP.Polynomial{T}}) where {T<:Number}
         @assert length(start) == length(target) "Expected the same number of polynomials, but got $(length(start)) and $(length(target))"
 
@@ -35,24 +34,26 @@ struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
         @assert s_nvars == t_nvars "Expected start and target system to have the same number of variables, but got $(s_nvars) and $(t_nvars)."
 
 
-        s_norm=FP.weylnorm(FP.homogenize.(start))
-        t_norm=FP.weylnorm(FP.homogenize.(target))
+        s_norm = FP.weylnorm(FP.homogenize.(start))
+        t_norm = FP.weylnorm(FP.homogenize.(target))
 
         map!(start,start) do f
-            FP.Polynomial(f.exponents,f.coefficients./s_norm,f.homogenized) end
+            FP.Polynomial(f.exponents, f.coefficients./s_norm, f.homogenized)
+        end
         map!(target,target) do f
-            FP.Polynomial(f.exponents,f.coefficients./t_norm,f.homogenized) end
+            FP.Polynomial(f.exponents, f.coefficients./t_norm, f.homogenized)
+        end
 
-        α=acos(real(FP.weyldot(start,target)))
+        α = acos(real(FP.weyldot(start,target)))
 
-        if α>pi/2
-            α=pi/2-α
-            map!(start,start) do f
-                FP.Polynomial(f.exponents,(-1.0).*f.coefficients,f.homogenized) end
+        if α > π / 2
+            α = π / 2 - α
+            map!(start, start) do f
+                FP.Polynomial(f.exponents, -1.0 .* f.coefficients, f.homogenized)
+            end
         end
 
         new(start, target, α)
-
     end
 
     function GeodesicOnTheSphere{T}(
@@ -110,8 +111,7 @@ end
 function Base.show(io::IO, H::GeodesicOnTheSphere)
     start = join(string.(H.start), ", ")
     target = join(string.(H.target), ", ")
-    println(io, typeof(H),
-    " The homotopy is given by the spherical geodesic from start/|start| (t=1) to target/|target| (t=0). ")
+    println(io, typeof(H), "(", "(1-t)⋅[", target, "] + t⋅[", start , "]", ") with angle $(H.α)")
 end
 
 
@@ -175,10 +175,10 @@ function jacobian!(H::GeodesicOnTheSphere{T}) where {T<:Number}
     J_target = differentiate(H.target)
 
     function (u, x, t)
-        λ_1 = sin(t*H.α)/sin(H.α)
-        λ_2 = cos(t*H.α) - λ_1*cos(H.α)
+        λ_1 = sin(t * H.α) / sin(H.α)
+        λ_2 = cos(t * H.α) - λ_1 * cos(H.α)
         map!(u, J_target, J_start) do f, g
-                    λ_1 * FP.evaluate(g, x) +  λ_2 * FP.evaluate(f, x)
+            λ_1 * FP.evaluate(g, x) +  λ_2 * FP.evaluate(f, x)
         end
     end
 end
@@ -188,8 +188,8 @@ function jacobian(H::GeodesicOnTheSphere{T}) where {T<:Number}
     J_target = differentiate(H.target)
 
     function (x, t)
-        λ_1 = sin(t*H.α)/sin(H.α)
-        λ_2 = cos(t*H.α) - λ_1*cos(H.α)
+        λ_1 = sin(t * H.α) / sin(H.α)
+        λ_2 = cos(t * H.α) - λ_1 * cos(H.α)
         map(J_target, J_start) do f, g
              λ_1 * FP.evaluate(g, x) + λ_2 * FP.evaluate(f, x)
         end
@@ -199,8 +199,8 @@ end
 function dt!(H::GeodesicOnTheSphere{T}) where {T<:Number}
 
     function (u, x, t)
-        λ_1_dot = t * cos(t*H.α)/sin(H.α)
-        λ_2_dot = - t * sin(t*H.α) - λ_1_dot*cos(H.α)
+        λ_1_dot = t * cos(t * H.α)/sin(H.α)
+        λ_2_dot = - t * sin(t * H.α) - λ_1_dot * cos(H.α)
         map!(u, H.target, H.start) do f, g
             λ_1_dot * FP.evaluate(g, x) + λ_2_dot * FP.evaluate(f, x)
         end
@@ -209,8 +209,8 @@ end
 function dt(H::GeodesicOnTheSphere{T}) where {T<:Number}
 
     function (x, t)
-        λ_1_dot = t * cos(t*H.α)/sin(H.α)
-        λ_2_dot = - t * sin(t*H.α) - λ_1_dot*cos(H.α)
+        λ_1_dot = t * cos(t * H.α) / sin(H.α)
+        λ_2_dot = - t * sin(t * H.α) - λ_1_dot * cos(H.α)
         map(H.target, H.start) do f, g
             λ_1_dot * FP.evaluate(g, x) + λ_2_dot * FP.evaluate(f, x)
         end

@@ -132,7 +132,7 @@ end
 function Base.show(io::IO, H::GammaTrickHomotopy)
     start = join(string.(H.start), ", ")
     target = join(string.(H.target), ", ")
-    println(io, typeof(H), "(", "(1-t)⋅[", target, "] + t⋅[", start, "]", ")")
+    println(io, typeof(H), "(", "(1-t)⋅[", target, "] + t⋅$(H.γ)⋅[", start, "]", ")")
 end
 
 #
@@ -177,14 +177,14 @@ end
 
 
 function weylnorm(H::GammaTrickHomotopy{T})  where {T<:Number}
-    f=FP.homogenize.(H.start)
-    g=FP.homogenize.(H.target)
-    λ_1=FP.weyldot(f,f)
-    λ_2=real(FP.weyldot(f,g)*H.γ)
-    λ_3=FP.weyldot(g,g)
+    f = FP.homogenize.(H.start)
+    g = FP.homogenize.(H.target)
+    λ_1 = FP.weyldot(f,f)
+    λ_2 = real(FP.weyldot(f,g)*H.γ)
+    λ_3 = FP.weyldot(g,g)
 
     function (t)
-        Float64(sqrt((one(T) - t)^2 * λ_1 + 2*(one(T) - t)*t*λ_2 + t^2 * abs(H.γ)^2 *  λ_3))
+        Float64(sqrt((one(T) - t)^2 * λ_1 + 2 * (one(T) - t) * t * λ_2 + t^2 * abs(H.γ)^2 * λ_3))
     end
 end
 
