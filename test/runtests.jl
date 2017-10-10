@@ -195,7 +195,7 @@ end
     HDT! = dt!(H)
     HDT!(u, [1, 2, 2.0], 0.0)
     @test u == [0, 0]
-    @test string(H) == "Homotopy.GeodesicOnTheSphere{Float64} The homotopy is given by the spherical geodesic from start/|start| (t=1) to target/|target| (t=0). \n"
+    @test string(H) == "Homotopy.GeodesicOnTheSphere{Float64}((1-t)⋅[0.25x₁+0.25x₂+0.75x₃, 0.25x₂+0.5x₃] + t⋅[0.25x₁+0.25x₂+0.75x₃, 0.25x₁+0.5x₃]) with angle $(H.α)\n"
 
     N=weylnorm(H)
     @test N(0.0)==1.0

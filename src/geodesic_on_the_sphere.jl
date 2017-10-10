@@ -162,6 +162,11 @@ function weylnorm(H::GeodesicOnTheSphere{Complex{T}})  where {T<:Real}
          one(T)
      end
 end
+function weylnorm(H::GeodesicOnTheSphere{T})  where {T<:Real}
+    function (t)
+         one(T)
+     end
+end
 
 
 function differentiate(F::Vector{FP.Polynomial{T}}) where {T<:Number}
