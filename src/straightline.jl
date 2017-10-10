@@ -133,18 +133,14 @@ function weylnorm(H::StraightLineHomotopy{T})  where {T<:Number}
     f = FP.homogenize.(H.start)
     g = FP.homogenize.(H.target)
     λ_1 = FP.weyldot(f,f)
-    λ_2 = real(FP.weyldot(f,g))
+    λ_2 = FP.weyldot(f,g)
     λ_3 = FP.weyldot(g,g)
 
     function (t)
-        Float64(sqrt((one(T) - t)^2 * λ_1 + 2 * (one(T) - t) * t * λ_2 + t^2 * λ_3))
+        sqrt(abs2(one(T) - t) * λ_1 + 2 * real((one(T) - t) * t * λ_2) + abs2(t) * λ_3)
     end
 end
 
-
-function differentiate(F::Vector{FP.Polynomial{T}}) where {T<:Number}
-    [FP.differentiate(f, i) for f in F, i=1:FP.nvariables.(F[1])]
-end
 function jacobian!(H::StraightLineHomotopy{T}) where {T<:Number}
     J_start = differentiate(H.start)
     J_target = differentiate(H.target)

@@ -157,22 +157,11 @@ end
 (H::GeodesicOnTheSphere)(x,t) = evaluate(H,x,t)
 
 
-function weylnorm(H::GeodesicOnTheSphere{Complex{T}})  where {T<:Real}
-    function (t)
-         one(T)
-     end
-end
 function weylnorm(H::GeodesicOnTheSphere{T})  where {T<:Real}
     function (t)
-         one(T)
+         real(one(T))
      end
 end
-
-
-function differentiate(F::Vector{FP.Polynomial{T}}) where {T<:Number}
-    [FP.differentiate(f, i) for f in F, i=1:FP.nvariables.(F[1])]
-end
-
 
 
 function jacobian!(H::GeodesicOnTheSphere{T}) where {T<:Number}

@@ -13,6 +13,8 @@ module Homotopy
 
     include("interface.jl")
 
+    include("utils.jl")
+
     include("straightline.jl")
     include("geodesic_on_the_sphere.jl")
     include("gammatrick.jl")

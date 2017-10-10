@@ -180,18 +180,15 @@ function weylnorm(H::GammaTrickHomotopy{T})  where {T<:Number}
     f = FP.homogenize.(H.start)
     g = FP.homogenize.(H.target)
     λ_1 = FP.weyldot(f,f)
-    λ_2 = real(FP.weyldot(f,g)*H.γ)
+    λ_2 = FP.weyldot(f,g)
     λ_3 = FP.weyldot(g,g)
 
     function (t)
-        Float64(sqrt((one(T) - t)^2 * λ_1 + 2 * (one(T) - t) * t * λ_2 + t^2 * abs(H.γ)^2 * λ_3))
+        sqrt(abs2(one(T) - t) * λ_1 + 2 * real((one(T) - t) * t * H.γ * λ_2) + abs2(t) * abs2(H.γ) * λ_3)
     end
 end
 
 
-function differentiate(F::Vector{FP.Polynomial{T}}) where {T<:Complex}
-    [FP.differentiate(f, i) for f in F, i=1:FP.nvariables.(F[1])]
-end
 function jacobian!(H::GammaTrickHomotopy{T}) where {T<:Complex}
     J_start = differentiate(H.start)
     J_target = differentiate(H.target)
