@@ -1,4 +1,4 @@
-export evaluate, evaluate!, jacobian, jacobian!, dt, dt!,
+export evaluate, evaluate!, weylnorm, jacobian, jacobian!, dt, dt!,
     nvariables, homogenize, dehomogenize, ishomogenized, ishomogenous
 
 """
@@ -15,6 +15,15 @@ Evaluate the homotopy `H` at `x` to time `t`, i.e. ``H(x,t)``, and store the res
 Use this instead of [`evaluate`](@ref) to avoid allocations.
 """
 function evaluate! end
+
+
+"""
+    weylnorm(H::AbstractHomotopy)
+
+Creates a function with variable `t` that computes the Weyl norm (or Bombieri norm) of ``H(x,t)``.
+See [here](https://en.wikipedia.org/wiki/Bombieri_norm) for details about the Weyl norm.
+"""
+function weylnorm end
 
 """
     jacobian(H::AbstractHomotopy)
