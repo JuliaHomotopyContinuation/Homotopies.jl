@@ -63,20 +63,22 @@ end
 function StraightLineHomotopy(
     start::Vector{FP.Polynomial{T}},
     target::Vector{FP.Polynomial{S}}) where {T<:Number, S<:Number}
-    StraightLineHomotopy{Complex128}(start,target)
+    StraightLineHomotopy{promote_type(S,T)}(start,target)
 end
 function StraightLineHomotopy(
     start::Vector{<:MP.AbstractPolynomial{T}},
     target::Vector{<:MP.AbstractPolynomial{S}}) where {T<:Number, S<:Number}
-    StraightLineHomotopy{Complex128}(
+    P = promote_type(S, T)
+    StraightLineHomotopy{P}(
         convert(Vector{FP.Polynomial{T}}, start),
         convert(Vector{FP.Polynomial{T}}, target))
 end
 function StraightLineHomotopy(
     start::MP.AbstractPolynomial{T},
     target::MP.AbstractPolynomial{S}) where {T,S}
-    s, t = convert(Vector{FP.Polynomial{Complex128}}, [start, target])
-    StraightLineHomotopy{Complex128}([s], [t])
+    U = promote_type(S, T)
+    s, t = convert(Vector{FP.Polynomial{U}}, [start, target])
+    StraightLineHomotopy{U}([s], [t])
 end
 
 #
@@ -116,21 +118,17 @@ end
 #
 # EVALUATION + DIFFERENTATION
 #
-function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy{T}, x::Vector{U}, t::Number) where {T<:Number, U<:Number}
-
-    if T!=U
-        x=convert(Vector{Complex128},x)
-    end
-
+function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
     map!(u, H.target, H.start) do f, g
         (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
     end
 end
-function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{U}, t::Number) where {T<:Number, U<:Number}
+function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
     evaluate!(zeros(H.target, T), H, x,  t)
 end
 (H::StraightLineHomotopy)(x,t) = evaluate(H,x,t)
-
+evaluate(::AbstractHomotopy{T}, x::Vector{U}, t::Number) = error("The input vector has currently type $(U) but was expected to have type ${T}. Maybe you need to convert your homotopy")
+evaluate!(u::AbstractVector{T}, ::AbstractHomotopy{T}, x::Vector{U}, t::Number) = error("The input vector has currently type $(U) but was expected to have type ${T}. Maybe you need to convert your homotopy")
 
 function weylnorm(H::StraightLineHomotopy{T})  where {T<:Number}
     f = FP.homogenize.(H.start)
