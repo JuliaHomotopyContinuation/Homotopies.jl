@@ -170,7 +170,7 @@ function evaluate!(u::AbstractVector{T}, H::GammaTrickHomotopy{T}, x::Vector{T},
         (one(T) - t) * FP.evaluate(f, x) + t * H.γ * FP.evaluate(g, x)
     end
 end
-function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{T}, t::Number) where {T<:Complex}
+function evaluate(H::GammaTrickHomotopy{T}, x::Vector{T}, t::Number) where {T<:Complex}
     evaluate!(zeros(H.target, T), H, x,  t)
 end
 (H::GammaTrickHomotopy)(x,t) = evaluate(H,x,t)
