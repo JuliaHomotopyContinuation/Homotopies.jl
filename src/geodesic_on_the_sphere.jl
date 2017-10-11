@@ -151,7 +151,7 @@ function evaluate!(u::AbstractVector{T}, H::GeodesicOnTheSphere{T}, x::Vector{T}
     end
 end
 
-function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
+function evaluate(H::GeodesicOnTheSphere{T}, x::Vector{T}, t::Number) where {T<:Number}
     evaluate!(zeros(H.target, T), H, x,  t)
 end
 (H::GeodesicOnTheSphere)(x,t) = evaluate(H,x,t)

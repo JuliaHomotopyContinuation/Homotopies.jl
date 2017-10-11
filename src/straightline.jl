@@ -123,7 +123,7 @@ function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy{T}, x::Vector{T
         (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
     end
 end
-function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
+function evaluate(H::StraightLineHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
     evaluate!(zeros(H.target, T), H, x,  t)
 end
 (H::StraightLineHomotopy)(x,t) = evaluate(H,x,t)
