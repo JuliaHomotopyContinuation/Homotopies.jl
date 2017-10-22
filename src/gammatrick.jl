@@ -156,6 +156,12 @@ function Base.promote_rule(
     GammaTrickHomotopy{promote_type(T,S)}
 end
 
+function Base.promote_rule(
+    ::Type{GammaTrickHomotopy{T}},
+    ::Type{S}) where {S<:Number,T<:Number}
+    GammaTrickHomotopy{promote_type(T,S)}
+end
+
 function Base.convert(
     ::Type{GammaTrickHomotopy{T}},
     H::GammaTrickHomotopy) where {T}
