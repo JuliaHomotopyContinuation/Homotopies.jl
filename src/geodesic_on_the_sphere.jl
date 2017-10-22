@@ -5,7 +5,7 @@ export GeodesicOnTheSphere
 
 Homotopy is the geodesic from `g=start/|start|` (t=1) to `f=target/|target|`` (t=0):
 ``H(x,t) = (cos(tα) - sin (tα)cos(α)) f + sin(tα) g``,
-where ``α = cos <f,g>``.
+where ``α = cos <f,g>``. The constructor automatically homgenizes `start` and `target`.
 
 `start` and `target` have to match and to be one of the following
 * `Vector{<:MP.AbstractPolynomial}` where `MP` is [`MultivariatePolynomials`](https://github.com/blegat/MultivariatePolynomials.jl)
@@ -22,7 +22,15 @@ struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
     target::Vector{FP.Polynomial{T}}
     α::Float64
 
+    # only used for conversions
+    function GeodesicOnTheSphere{T}(start::Vector{FP.Polynomial{T}}, target::Vector{FP.Polynomial{T}}, α::Float64) where {T<:Number}
+        new(start, target, α)
+    end
+
     function GeodesicOnTheSphere{T}(start::Vector{FP.Polynomial{T}}, target::Vector{FP.Polynomial{T}}) where {T<:Number}
+        start = FP.homogenize.(start)
+        target = FP.homogenize.(target)
+
         @assert length(start) == length(target) "Expected the same number of polynomials, but got $(length(start)) and $(length(target))"
 
         s_nvars = maximum(FP.nvariables.(start))
@@ -34,22 +42,19 @@ struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
         @assert s_nvars == t_nvars "Expected start and target system to have the same number of variables, but got $(s_nvars) and $(t_nvars)."
 
 
-        s_norm = FP.weylnorm(FP.homogenize.(start))
-        t_norm = FP.weylnorm(FP.homogenize.(target))
+        s_norm = FP.weylnorm(start)
+        t_norm = FP.weylnorm(target)
 
-        map!(start,start) do f
-            FP.Polynomial(f.exponents, f.coefficients./s_norm, f.homogenized)
-        end
-        map!(target,target) do f
-            FP.Polynomial(f.exponents, f.coefficients./t_norm, f.homogenized)
+        for i=1:length(start)
+            scale!(start[i].coefficients, inv(s_norm))
+            scale!(target[i].coefficients, inv(t_norm))
         end
 
-        α = acos(real(FP.weyldot(start,target)))
-
+        α = acos(convert(Float64, real(FP.weyldot(start,target))))
         if α > π / 2
             α = π / 2 - α
-            map!(start, start) do f
-                FP.Polynomial(f.exponents, -1.0 .* f.coefficients, f.homogenized)
+            for i = 1:length(start)
+                scale!(start[i].coefficients, -one(T))
             end
         end
 
@@ -134,11 +139,22 @@ function Base.promote_rule(
     GeodesicOnTheSphere{promote_type(T,S)}
 end
 
+function Base.promote_rule(
+    ::Type{GeodesicOnTheSphere{T}},
+    ::Type{S}) where {S<:Number,T<:Number}
+    GeodesicOnTheSphere{promote_type(T,S)}
+end
+
 function Base.convert(
     ::Type{GeodesicOnTheSphere{T}},
     H::GeodesicOnTheSphere) where {T}
-    GeodesicOnTheSphere{T}(H.start, H.target)
+    GeodesicOnTheSphere{T}(
+        convert(Vector{FP.Polynomial{T}}, H.start),
+        convert(Vector{FP.Polynomial{T}}, H.target),
+        H.α)
 end
+
+
 
 #
 # EVALUATION + DIFFERENTATION
