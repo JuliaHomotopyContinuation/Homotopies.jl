@@ -172,7 +172,7 @@ end
     @test convert(GeodesicOnTheSphere{Float64}, K) isa GeodesicOnTheSphere{Float64}
 
 
-    w = [1.0, 2.0, 2.0]
+    w = [1.0, 1.0, 2.0, 2.0]
     @test evaluate(H, w, 1.0) == [9/4, 5/4]
     @test H(w, 1.0) == [9/4, 5/4]
     u = zeros(2)
@@ -181,37 +181,37 @@ end
 
 
     JH = jacobian(H)
-    @test JH(rand(3), 0.0) == [1 1 3; 0 1 2]./4
-    @test JH(rand(3), 1.0) == [1 1 3; 1 0 2]./4
-    u = zeros(2, 3)
+    @test JH(rand(4), 0.0) == [0 1 1 3; 0 0 1 2]./4
+    @test JH(rand(4), 1.0) == [0 1 1 3; 0 1 0 2]./4
+    u = zeros(2, 4)
     JH! = jacobian!(H)
-    @test JH!(u, rand(3), 0.0) == JH(rand(3), 0.0)
-    @test u == JH(rand(3), 0.0)
+    @test JH!(u, rand(4), 0.0) == JH(rand(4), 0.0)
+    @test u == JH(rand(4), 0.0)
 
 
     HDT = dt(H)
-    @test HDT([1, 2, 2.0], 0.0) == [0, 0]
+    @test HDT([1.0, 1.0, 1, 2, 2.0], 0.0) == [0, 0]
     u = zeros(2)
     HDT! = dt!(H)
-    HDT!(u, [1, 2, 2.0], 0.0)
+    HDT!(u, [1.0, 1.0, 1, 2, 2.0], 0.0)
     @test u == [0, 0]
-    @test string(H) == "Homotopy.GeodesicOnTheSphere{Float64}((1-t)⋅[0.25x₁+0.25x₂+0.75x₃, 0.25x₂+0.5x₃] + t⋅[0.25x₁+0.25x₂+0.75x₃, 0.25x₁+0.5x₃]) with angle $(H.α)\n"
+    @test string(H) == "Homotopy.GeodesicOnTheSphere{Float64}((1-t)⋅[0.25x+0.25y+0.75z, 0.25y+0.5z] + t⋅[0.25x+0.25y+0.75z, 0.25x+0.5z]) with angle $(H.α)\n"
 
     N=weylnorm(H)
     @test N(0.0)==1.0
     @test N(0.5)==1.0
 
     H = GeodesicOnTheSphere(x^2+y+z, z^2+2+x+y^2)
-    HH = homogenize(H)
-    @test ishomogenous(H) == false
-    @test ishomogenized(H) == false
-    @test ishomogenous(HH)
-    @test ishomogenized(HH)
-    @test H != HH
+    #HH = homogenize(H)
+    @test ishomogenous(H) == true
+    @test ishomogenized(H) == true
+    # @test ishomogenous(HH)
+    # @test ishomogenized(HH)
+    # @test H != HH
 
 
     @test length(H) == 1
-    @test nvariables(H) == 3
+    @test nvariables(H) == 4
 end
 
 
