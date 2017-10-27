@@ -10,7 +10,7 @@ module Homotopy
     abstract type AbstractHomotopy{T<:Number} end
     abstract type AbstractPolynomialHomotopy{T<:Number} <: AbstractHomotopy{T} end
     abstract type AbstractHomotopyConfig{T} end
-    export AbstractHomotopy, AbstractPolynomialHomotopy
+    export AbstractHomotopy, AbstractPolynomialHomotopy, AbstractHomotopyConfig
 
     include("interface.jl")
 
