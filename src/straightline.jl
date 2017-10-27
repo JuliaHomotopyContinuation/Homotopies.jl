@@ -132,7 +132,8 @@ function evaluate(H::StraightLineHomotopy{T}, x::Vector{T}, t::Number) where {T<
     evaluate!(zeros(H.target, T), H, x,  t)
 end
 (H::StraightLineHomotopy)(x,t) = evaluate(H,x,t)
-
+evaluate(::AbstractHomotopy{T}, x::Vector{U}, t::Number) = error("The input vector has currently type $(U) but was expected to have type ${T}. Maybe you need to convert your homotopy")
+evaluate!(u::AbstractVector{T}, ::AbstractHomotopy{T}, x::Vector{U}, t::Number) = error("The input vector has currently type $(U) but was expected to have type ${T}. Maybe you need to convert your homotopy")
 
 function weylnorm(H::StraightLineHomotopy{T})  where {T<:Number}
     f = FP.homogenize.(H.start)
