@@ -2,23 +2,32 @@ export evaluate, evaluate!, weylnorm, jacobian, jacobian!, dt, dt!,
     nvariables, homogenize, dehomogenize, ishomogenized, ishomogenous
 
 """
-    evaluate(H::AbstractHomotopy, x, t)
+    evaluate(H::AbstractPolynomialHomotopy, x, t)
 
-Evaluate the homotopy `H` at `x` to time `t`, i.e. ``H(x,t)``
+Evaluate the homotopy `H` at `x` to time `t`, i.e. ``H(x,t)``.
+
+    evaluate(H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialConfig)
+
+Evaluate the homotopy `H` at `x` to time `t` using the precompuated values in `cfg`.
+Note that this is significantly faster than `evaluate(H, x, t)`.
 """
 function evaluate end
 
 """
-    evaluate!(u::Vector, H::AbstractHomotopy, x, t)
+    evaluate!(u::Vector, H::AbstractPolynomialHomotopy, x, t)
 
 Evaluate the homotopy `H` at `x` to time `t`, i.e. ``H(x,t)``, and store the result in `u`.
-Use this instead of [`evaluate`](@ref) to avoid allocations.
+
+    evaluate!(u::AbstractVector, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialConfig)
+
+Evaluate the homotopy `H` at `x` to time `t` using the precompuated values in `cfg` and store
+the result in `u`.
 """
 function evaluate! end
 
 
 """
-    weylnorm(H::AbstractHomotopy)
+    weylnorm(H::AbstractPolynomialHomotopy)
 
 Creates a function with variable `t` that computes the Weyl norm (or Bombieri norm) of ``H(x,t)``.
 See [here](https://en.wikipedia.org/wiki/Bombieri_norm) for details about the Weyl norm.
@@ -26,36 +35,64 @@ See [here](https://en.wikipedia.org/wiki/Bombieri_norm) for details about the We
 function weylnorm end
 
 """
-    jacobian(H::AbstractHomotopy)
+    jacobian(H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialConfig)
 
-Compute an evaluation function `(x, t) -> J_H(x,t)` of the jacobian ``J_H`` of the homotopy ``H``.
+Compute the jacobian of `H` at `x` and `t` using the precomputed values in `cfg`.
 The jacobian is constructed w.r.t. `x`, i.e. it doesn't contain the partial derivatives
 w.r.t. `t`.
 """
 function jacobian end
 
 """
-    jacobian!(H::AbstractHomotopy)
+    jacobian!(u, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialConfig)
 
-Compute an inplace evaluation function `(u, x, t) -> u := J_H(x,t)` of the jacobian
-``J_H`` of the homotopy ``H``.
-Use this instead of [`jacobian`](@ref) to avoid allocations.
+Compute the jacobian of `H` at `x` and `t` using the precomputed values in `cfg` and
+store the result in `u`.
+
+    jacobian!(r::JacobianDiffResult, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialConfig)
+
+Compute ``H(x, t)`` and the jacobian of `H` at `x` and `t` at once using the precomputated values in `cfg`
+and store thre result in `r`. This is faster than computing both values separetely.
+
+### Example
+```julia
+cfg = PolynomialConfig(H)
+r = JacobianDiffResult(cfg)
+jacobian!(r, H, x, t, cfg)
+
+value(r) == H(x, t)
+jacobian(r) == jacobian(H, x, t, cfg)
+```
 """
 function jacobian! end
 
 """
-    dt(H::AbstractHomotopy)
+    dt(H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialConfig)
 
-Compute an evaluation function `(x, t) -> ∂H∂t(x,t)` of the partial derivative
-``\\frac{∂H}{∂t}`` of the homotopy ``H``.
+Compute the derivative of `H` w.r.t. ``t`` at `x` and `t` using the precomputed values in `cfg`.
 """
 function dt end
 
 """
-    dt!(H::AbstractHomotopy)
+    dt!(u, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialConfig)
 
-Compute an inplace evaluation function `(u, x, t) -> u := ∂H∂t(x,t)` of the partial derivative
-``\\frac{∂H}{∂t}`` of the homotopy ``H``. Use this instead of [`dt`](@ref) to avoid allocations.
+Compute the derivative of `H` w.r.t. ``t`` at `x` and `t` using the precomputed values in `cfg`
+and store the result in `u`.
+
+    dt!(r::DtDiffResult, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialConfig)
+
+Compute the derivative of `H` w.r.t. ``t`` at `x` and `t` using the precomputed values in `cfg`
+and store the result in `r`. This is faster than computing both values separetely.
+
+### Example
+```julia
+cfg = PolynomialConfig(H)
+r = DtDiffResult(cfg)
+dt!(r, H, x, t, cfg)
+
+value(r) == H(x, t)
+dt(r) == dt(H, x, t, cfg)
+```
 """
 function dt! end
 

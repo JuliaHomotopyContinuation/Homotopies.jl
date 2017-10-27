@@ -13,11 +13,13 @@ module Homotopy
 
     include("interface.jl")
 
-    include("utils.jl")
+    include("config.jl")
+    include("diffresult.jl")
 
     include("straightline.jl")
     include("geodesic_on_the_sphere.jl")
-    include("gammatrick.jl")
+
+    include("polynomial.jl")
 
     include("totaldegree.jl")
     include("randomhomotopy.jl")
