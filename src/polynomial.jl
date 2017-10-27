@@ -10,7 +10,7 @@ uniformly from the (complex) unit circle. Use this to make the paths ``z(t)`` ge
 
 You can also pass a scaling factor directly.
 """
-function gammatrick!(H::AbstractPolynomialHomotopy{T}, γ::Number) where {T<:Complex}
+function gammatrick!(H::AbstractPolynomialHomotopy{T}, γ::Union{AbstractFloat, Complex}) where {T<:Complex}
     FP.scale_coefficients!.(H.start, convert(T, γ))
     H
 end
