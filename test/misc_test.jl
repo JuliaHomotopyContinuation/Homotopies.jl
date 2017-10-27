@@ -47,6 +47,7 @@ end
     @polyvar x y
 
     H = StraightLineHomotopy{Complex128}([x^3*y-2, x^2+y+1], [x^2+y+1, x^3*y-2])
+    G = GeodesicOnTheSphere{Complex128}([x^3*y-2, x^2+y+1], [x^2+y+1, x^3*y-2])
     H2 = deepcopy(H)
 
     x = rand(2)
@@ -67,4 +68,10 @@ end
     H = deepcopy(H2)
     gammatrick!(H, 0.5)
     @test H(x, 1.0) ≈ 0.5 * H2(x, 1.0)
+
+
+    G2 = deepcopy(G)
+    x = rand(3)
+    gammatrick!(G)
+    @test G(x, t) != G2(x, t)
 end

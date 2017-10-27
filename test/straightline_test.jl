@@ -33,7 +33,10 @@
     evaluate!(u, H, w, 1.0, cfg)
     @test u == [7, 3]
 
+    @test promote_type(StraightLineHomotopy{Float64}, Complex128) == StraightLineHomotopy{Complex128}
+    @test promote_type(StraightLineHomotopy{Float64}, StraightLineHomotopy{Complex128}) == StraightLineHomotopy{Complex128}
 
+    @test PolynomialConfig(H, rand(Complex128, 3)) isa PolynomialConfig{Complex128}
 
     @test jacobian(H, rand(3), 0.0, cfg) == [1 1 2; 0 1 1]
     @test jacobian(H, rand(3), 1.0, cfg) == [1 1 2; 1 0 1]
@@ -41,12 +44,23 @@
     @test jacobian!(u, H, rand(3), 0.0, cfg) == [1 1 2; 0 1 1]
     @test u == [1 1 2; 0 1 1]
 
+    r = JacobianDiffResult(cfg)
+    w = rand(3)
+    jacobian!(r, H, w, 0.24, cfg)
+    @test value(r) == H(w, 0.24)
+    @test jacobian(r) == jacobian(H, w, 0.24, cfg)
 
     @test dt(H, [1.0, 2, 2], 1.0, cfg) == [0, -1]
     u = zeros(2)
     dt!(u, H, [1, 2, 2.0], 1.0, cfg)
     @test u == [0, -1]
     @test string(H) == "Homotopy.StraightLineHomotopy{Float64}((1-t)⋅[x+y+2.0z, y+z] + t⋅[x+y+2.0z, x+z])\n"
+
+    r = DtDiffResult(cfg)
+    w = rand(3)
+    dt!(r, H, w, 0.24, cfg)
+    @test value(r) == H(w, 0.24)
+    @test dt(r) == dt(H, w, 0.24, cfg)
 
     N = weylnorm(H)
     @test N(0.0)==sqrt(8)

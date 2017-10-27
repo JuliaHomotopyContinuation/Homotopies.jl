@@ -238,10 +238,10 @@ function weylnorm(H::GeodesicOnTheSphere{T}) where {T<:Number}
      end
 end
 
-function gammatrick!(H::GeodesicOnTheSphere{T}, γ::Number) where {T<:Complex}
+function gammatrick!(H::GeodesicOnTheSphere{T}, γ::Union{AbstractFloat, Complex}) where {T<:Complex}
     FP.scale_coefficients!.(H.start, convert(T, γ))
 
-    FP.scale_coefficients!.(start, inv(FP.weylnorm(H.start)))
+    FP.scale_coefficients!.(H.start, inv(FP.weylnorm(H.start)))
     α = acos(convert(Float64, real(FP.weyldot(H.start, H.target))))
     if α > π / 2
         α = π / 2 - α

@@ -37,6 +37,12 @@
     @test jacobian!(u, H, rand(4), 0.0, cfg) == [0 1 1 3; 0 0 1 2]./4
     @test u == [0 1 1 3; 0 0 1 2]./4
 
+    r = JacobianDiffResult(cfg)
+    w = rand(4)
+    jacobian!(r, H, w, 0.24, cfg)
+    @test value(r) == H(w, 0.24)
+    @test jacobian(r) == jacobian(H, w, 0.24, cfg)
+
 
     # TODO: This test is bonkers atm
     @test dt(H, [1.0, 1.0, 1, 2, 2.0], 0.0, cfg) != [0, 0]
@@ -45,17 +51,27 @@
     @test u == dt(H, [1.0, 1.0, 1, 2, 2.0], 0.0, cfg)
     @test string(H) == "Homotopy.GeodesicOnTheSphere{Float64}((1-t)⋅[0.25x+0.25y+0.75z, 0.25y+0.5z] + t⋅[0.25x+0.25y+0.75z, 0.25x+0.5z]) with angle $(H.α)\n"
 
+    r = DtDiffResult(cfg)
+    w = rand(4)
+    dt!(r, H, w, 0.24, cfg)
+    @test value(r) == H(w, 0.24)
+    @test dt(r) == dt(H, w, 0.24, cfg)
+
+    @test promote_type(GeodesicOnTheSphere{Float64}, Complex128) == GeodesicOnTheSphere{Complex128}
+    @test promote_type(GeodesicOnTheSphere{Float64}, GeodesicOnTheSphere{Complex128}) == GeodesicOnTheSphere{Complex128}
+
     N=weylnorm(H)
     @test N(0.0)==1.0
     @test N(0.5)==1.0
 
     H = GeodesicOnTheSphere(x^2+y+z, z^2+2+x+y^2)
-    #HH = homogenize(H)
+    @test H == H
+    
+    HH = homogenize(H)
     @test ishomogenous(H) == true
     @test ishomogenized(H) == true
-    # @test ishomogenous(HH)
-    # @test ishomogenized(HH)
-    # @test H != HH
+    @test ishomogenous(HH)
+    @test ishomogenized(HH)
 
 
     @test length(H) == 1

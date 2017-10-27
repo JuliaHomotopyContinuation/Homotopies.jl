@@ -28,13 +28,13 @@ mutable struct DtDiffResult{T, AV1<:AbstractVector{T}, AV2<:AbstractVector{T}}
 end
 
 function DtDiffResult(cfg::PolynomialConfig{T}) where T
-    DtDiffResult{T, Vector{T}, Matrix{T}}(
+    DtDiffResult{T, Vector{T}, Vector{T}}(
         similar(cfg.result_start.value),
-        similar(cfg.result_start.jacobian))
+        similar(cfg.result_start.value))
 end
 
-function DtDiffResult(value::AbstractVector{T}, jacobian::AbstractMatrix{T}) where T
-    DtDiffResult{T, typeof(value), typeof(jacobian)}(value, jacobian)
+function DtDiffResult(value::AbstractVector{T}, dt::AbstractVector{T}) where T
+    DtDiffResult{T, typeof(value), typeof(jacobian)}(value, dt)
 end
 """
     value(r::DtDiffResult)
