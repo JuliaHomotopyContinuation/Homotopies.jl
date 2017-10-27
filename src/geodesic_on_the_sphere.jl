@@ -17,7 +17,7 @@ where ``α = cos <f,g>``. The constructor automatically homgenizes `start` and `
 
 You can also force a specific coefficient type `T`.
 """
-struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
+mutable struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
     start::Vector{FP.Polynomial{T}}
     target::Vector{FP.Polynomial{T}}
     α::Float64
@@ -236,4 +236,18 @@ function weylnorm(H::GeodesicOnTheSphere{T}) where {T<:Number}
     function (t)
          real(one(T))
      end
+end
+
+function gammatrick!(H::GeodesicOnTheSphere{T}, γ::Number) where {T<:Complex}
+    FP.scale_coefficients!.(H.start, convert(T, γ))
+
+    FP.scale_coefficients!.(start, inv(FP.weylnorm(H.start)))
+    α = acos(convert(Float64, real(FP.weyldot(H.start, H.target))))
+    if α > π / 2
+        α = π / 2 - α
+        FP.scale_coefficients!.(H.start, -one(T))
+    end
+    H.α = α
+
+    H
 end
