@@ -1,17 +1,17 @@
-export PolynomialConfig
+export PolynomialHomotopyConfig
 
 """
-    PolynomialConfig(H::AbstractPolynomialHomotopy{T}, [x::AbstractVector{S}])
+    PolynomialHomotopyConfig(H::AbstractPolynomialHomotopy{T}, [x::AbstractVector{S}])
 
 A data structure with which `H` and it's derivatives can be evaluated efficiently.
 Note that `x` is only used to determine the
 output type of `H(x)`.
 
-    PolynomialConfig(H::AbstractPolynomialHomotopy{T}, [S])
+    PolynomialHomotopyConfig(H::AbstractPolynomialHomotopy{T}, [S])
 
 Instead of a vector `x` a type can also be given directly.
 """
-mutable struct PolynomialConfig{T}
+mutable struct PolynomialHomotopyConfig{T} <: AbstractHomotopyConfig{T}
     start::FP.JacobianConfig{T}
     target::FP.JacobianConfig{T}
 
@@ -19,24 +19,24 @@ mutable struct PolynomialConfig{T}
     result_target::FP.JacobianDiffResult{T}
 end
 
-function PolynomialConfig(H::AbstractPolynomialHomotopy{T}) where T
+function PolynomialHomotopyConfig(H::AbstractPolynomialHomotopy{T}) where T
     start = FP.JacobianConfig(H.start)
     target = FP.JacobianConfig(H.target)
     result_start = FP.JacobianDiffResult(start)
     result_target = FP.JacobianDiffResult(target)
-    PolynomialConfig(start, target, result_start, result_target)
+    PolynomialHomotopyConfig(start, target, result_start, result_target)
 end
 
-function PolynomialConfig(H::AbstractPolynomialHomotopy, ::AbstractVector{T}) where T
+function PolynomialHomotopyConfig(H::AbstractPolynomialHomotopy, ::AbstractVector{T}) where T
     start = FP.JacobianConfig(H.start, T)
     target = FP.JacobianConfig(H.target, T)
     result_start = FP.JacobianDiffResult(start)
     result_target = FP.JacobianDiffResult(target)
-    PolynomialConfig(start, target, result_start, result_target)
+    PolynomialHomotopyConfig(start, target, result_start, result_target)
 end
 
 function evaluate_start_target!(
-    cfg::PolynomialConfig,
+    cfg::PolynomialHomotopyConfig,
     H::AbstractPolynomialHomotopy,
     x::Vector)
 
@@ -45,7 +45,7 @@ function evaluate_start_target!(
 end
 
 function jacobian_start_target!(
-    cfg::PolynomialConfig,
+    cfg::PolynomialHomotopyConfig,
     H::AbstractPolynomialHomotopy,
     x::Vector)
 
@@ -54,7 +54,7 @@ function jacobian_start_target!(
 end
 
 function evaluate_and_jacobian_start_target!(
-    cfg::PolynomialConfig,
+    cfg::PolynomialHomotopyConfig,
     H::AbstractPolynomialHomotopy,
     x::Vector
     )
@@ -62,8 +62,8 @@ function evaluate_and_jacobian_start_target!(
     FP.jacobian!(cfg.result_target, H.target, x, cfg.target)
 end
 
-value_start(cfg::PolynomialConfig) = cfg.result_start.value
-value_target(cfg::PolynomialConfig) = cfg.result_target.value
+value_start(cfg::PolynomialHomotopyConfig) = cfg.result_start.value
+value_target(cfg::PolynomialHomotopyConfig) = cfg.result_target.value
 
-jacobian_start(cfg::PolynomialConfig) = cfg.result_start.jacobian
-jacobian_target(cfg::PolynomialConfig) = cfg.result_target.jacobian
+jacobian_start(cfg::PolynomialHomotopyConfig) = cfg.result_start.jacobian
+jacobian_target(cfg::PolynomialHomotopyConfig) = cfg.result_target.jacobian

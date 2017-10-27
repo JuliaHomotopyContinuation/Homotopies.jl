@@ -1,7 +1,7 @@
 export DtDiffResult, value, dt, JacobianDiffResult
 
 """
-    DtDiffResult(cfg::PolynomialConfig)
+    DtDiffResult(cfg::PolynomialHomotopyConfig)
 
 During the computation of the time derivative ``∂H/∂t`` we compute nearly everything
 we need for the evaluation of ``H(x)``. `DtDiffResult` allocates memory to hold both values.
@@ -10,7 +10,7 @@ This structure also signals `dt!` to store ``H(x)`` and ``∂H/∂t``.
 ### Example
 
 ```julia
-cfg = PolynomialConfig(H, x)
+cfg = PolynomialHomotopyConfig(H, x)
 r = JacobianDiffResult(cfg)
 dt!(r, H, x, t, cfg)
 
@@ -27,7 +27,7 @@ mutable struct DtDiffResult{T, AV1<:AbstractVector{T}, AV2<:AbstractVector{T}}
     dt::AV2
 end
 
-function DtDiffResult(cfg::PolynomialConfig{T}) where T
+function DtDiffResult(cfg::PolynomialHomotopyConfig{T}) where T
     DtDiffResult{T, Vector{T}, Vector{T}}(
         similar(cfg.result_start.value),
         similar(cfg.result_start.value))
@@ -53,7 +53,7 @@ dt(r::DtDiffResult) = r.dt
 
 
 """
-    JacobianDiffResult(cfg::PolynomialConfig)
+    JacobianDiffResult(cfg::PolynomialHomotopyConfig)
 
 During the computation of the jacobian ``J_H(x)`` we compute nearly everything we need for the evaluation of
 ``H(x)``. `JacobianDiffResult` allocates memory to hold both values.
@@ -62,7 +62,7 @@ This structure also signals `jacobian!` to store ``H(x)`` and ``J_H(x)``.
 ### Example
 
 ```julia
-cfg = PolynomialConfig(H, x)
+cfg = PolynomialHomotopyConfig(H, x)
 r = JacobianDiffResult(cfg)
 jacobian!(r, H, x, t, cfg)
 
@@ -79,7 +79,7 @@ mutable struct JacobianDiffResult{T, AV<:AbstractVector{T}, AM<:AbstractMatrix{T
     jacobian::AM
 end
 
-function JacobianDiffResult(cfg::PolynomialConfig{T}) where T
+function JacobianDiffResult(cfg::PolynomialHomotopyConfig{T}) where T
     JacobianDiffResult{T, Vector{T}, Matrix{T}}(
         similar(cfg.result_start.value),
         similar(cfg.result_start.jacobian))

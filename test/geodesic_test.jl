@@ -25,7 +25,7 @@
     evaluate!(u, H, w, 1.0)
     @test u == [9/4, 5/4]
 
-    cfg = PolynomialConfig(H)
+    cfg = PolynomialHomotopyConfig(H)
     @test evaluate(H, w, 1.0, cfg) == [9/4, 5/4]
     u = zeros(2)
     evaluate!(u, H, w, 1.0, cfg)

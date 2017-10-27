@@ -143,22 +143,22 @@ end
 (H::StraightLineHomotopy)(x,t) = evaluate(H,x,t)
 
 
-function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy, x::Vector, t::Number, cfg::PolynomialConfig) where {T<:Number}
+function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy, x::Vector, t::Number, cfg::PolynomialHomotopyConfig) where {T<:Number}
     evaluate_start_target!(cfg, H, x)
     u .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
 end
 
-function evaluate(H::StraightLineHomotopy{T}, x::Vector{S}, t::Number, cfg::PolynomialConfig) where {T, S}
+function evaluate(H::StraightLineHomotopy{T}, x::Vector{S}, t::Number, cfg::PolynomialHomotopyConfig) where {T, S}
     evaluate!(zeros(H.target, promote_type(T, S)), H, x, t, cfg)
 end
 
-function jacobian!(u::AbstractMatrix, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function jacobian!(u::AbstractMatrix, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     jacobian_start_target!(cfg, H, x)
 
     u .= (one(T) - t) .* jacobian_target(cfg) .+ t .* jacobian_start(cfg)
 end
 
-function jacobian!(r::JacobianDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function jacobian!(r::JacobianDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     evaluate_and_jacobian_start_target!(cfg, H, x)
 
     r.value .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
@@ -166,23 +166,23 @@ function jacobian!(r::JacobianDiffResult, H::StraightLineHomotopy{T}, x::Abstrac
     r
 end
 
-function jacobian(H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function jacobian(H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     u = similar(jacobian_target(cfg))
     jacobian!(u, H, x, t, cfg)
     u
 end
 
-function dt!(u, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function dt!(u, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     evaluate_start_target!(cfg, H, x)
     u .= value_start(cfg) .- value_target(cfg)
 end
-function dt(H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function dt(H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     u = similar(value_start(cfg))
     dt!(u, H, x, t, cfg)
     u
 end
 
-function dt!(r::DtDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function dt!(r::DtDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     evaluate_start_target!(cfg, H, x)
     r.value .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
     r.dt .= value_start(cfg) .- value_target(cfg)

@@ -26,7 +26,7 @@
     evaluate!(u, H, w, 1.0)
     @test u == [7, 3]
 
-    cfg = PolynomialConfig(H)
+    cfg = PolynomialHomotopyConfig(H)
 
     @test evaluate(H, w, 1.0, cfg) == [7, 3]
     u = zeros(2)
@@ -36,7 +36,7 @@
     @test promote_type(StraightLineHomotopy{Float64}, Complex128) == StraightLineHomotopy{Complex128}
     @test promote_type(StraightLineHomotopy{Float64}, StraightLineHomotopy{Complex128}) == StraightLineHomotopy{Complex128}
 
-    @test PolynomialConfig(H, rand(Complex128, 3)) isa PolynomialConfig{Complex128}
+    @test PolynomialHomotopyConfig(H, rand(Complex128, 3)) isa PolynomialHomotopyConfig{Complex128}
 
     @test jacobian(H, rand(3), 0.0, cfg) == [1 1 2; 0 1 1]
     @test jacobian(H, rand(3), 1.0, cfg) == [1 1 2; 1 0 1]

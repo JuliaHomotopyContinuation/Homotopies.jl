@@ -178,24 +178,24 @@ function evaluate!(u::AbstractVector, H::GeodesicOnTheSphere{T}, x::Vector, t::N
     u
 end
 
-function evaluate(H::GeodesicOnTheSphere{T}, x::Vector{S}, t::Number, cfg::PolynomialConfig) where {T, S}
+function evaluate(H::GeodesicOnTheSphere{T}, x::Vector{S}, t::Number, cfg::PolynomialHomotopyConfig) where {T, S}
     evaluate!(zeros(H.target, promote_type(T, S)), H, x, t, cfg)
 end
 
-function evaluate!(u::AbstractVector{T}, H::GeodesicOnTheSphere, x::Vector, t::Number, cfg::PolynomialConfig) where {T<:Number}
+function evaluate!(u::AbstractVector{T}, H::GeodesicOnTheSphere, x::Vector, t::Number, cfg::PolynomialHomotopyConfig) where {T<:Number}
     evaluate_start_target!(cfg, H, x)
     λ_1, λ_2 = λ(H.α, t)
     u .= λ_1 .* value_start(cfg) .+ λ_2 .* value_target(cfg)
 end
 
 
-function jacobian!(u::AbstractMatrix, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function jacobian!(u::AbstractMatrix, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     jacobian_start_target!(cfg, H, x)
     λ_1, λ_2 = λ(H.α, t)
 
     u .= λ_1 .* jacobian_start(cfg) .+ λ_2 .* jacobian_target(cfg)
 end
-function jacobian!(r::JacobianDiffResult, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function jacobian!(r::JacobianDiffResult, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     evaluate_and_jacobian_start_target!(cfg, H, x)
     λ_1, λ_2 = λ(H.α, t)
 
@@ -204,25 +204,25 @@ function jacobian!(r::JacobianDiffResult, H::GeodesicOnTheSphere{T}, x::Abstract
     r
 end
 
-function jacobian(H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function jacobian(H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     u = similar(jacobian_target(cfg))
     jacobian!(u, H, x, t, cfg)
     u
 end
 
-function dt!(u, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function dt!(u, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     evaluate_start_target!(cfg, H, x)
     λ_1_dot, λ_2_dot = dλ(H.α, t)
     u .= λ_1_dot .* value_start(cfg) .+ λ_2_dot .* value_target(cfg)
 end
 
-function dt(H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function dt(H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     u = similar(value_start(cfg))
     dt!(u, H, x, t, cfg)
     u
 end
 
-function dt!(r::DtDiffResult, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialConfig) where {T<:Number}
+function dt!(r::DtDiffResult, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
     evaluate_start_target!(cfg, H, x)
     λ_1, λ_2 = λ(H.α, t)
     λ_1_dot, λ_2_dot = dλ(H.α, t)
