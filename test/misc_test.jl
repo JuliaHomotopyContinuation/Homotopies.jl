@@ -21,7 +21,7 @@ end
 
     f = randomsystem(Complex128, 1, 4, density=0.5)[]
     d = FP.degree(f)
-    @test length(f.coefficients) == binomial(d + 4, 4) * 0.5
+    @test length(f.coefficients) == ceil(Int, binomial(d + 4, 4) * 0.5)
 
     @test_throws AssertionError randomsystem(Complex128, 1, 4, density=0.0)
     @test_throws AssertionError randomsystem(Complex128, 1, 4, density=-12.0)
