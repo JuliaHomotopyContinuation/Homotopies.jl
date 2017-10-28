@@ -66,7 +66,7 @@
 
     H = GeodesicOnTheSphere(x^2+y+z, z^2+2+x+y^2)
     @test H == H
-    
+
     HH = homogenize(H)
     @test ishomogenous(H) == true
     @test ishomogenized(H) == true

@@ -143,22 +143,22 @@ end
 (H::StraightLineHomotopy)(x,t) = evaluate(H,x,t)
 
 
-function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy, x::Vector, t::Number, cfg::PolynomialHomotopyConfig) where {T<:Number}
-    evaluate_start_target!(cfg, H, x)
+function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy, x::Vector, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    evaluate_start_target!(cfg, H, x, precomputed)
     u .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
 end
 
-function evaluate(H::StraightLineHomotopy{T}, x::Vector{S}, t::Number, cfg::PolynomialHomotopyConfig) where {T, S}
-    evaluate!(zeros(H.target, promote_type(T, S)), H, x, t, cfg)
+function evaluate(H::StraightLineHomotopy{T}, x::Vector{S}, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T, S}
+    evaluate!(zeros(H.target, promote_type(T, S)), H, x, t, cfg, precomputed)
 end
 
-function jacobian!(u::AbstractMatrix, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
-    jacobian_start_target!(cfg, H, x)
+function jacobian!(u::AbstractMatrix, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    jacobian_start_target!(cfg, H, x, precomputed)
 
     u .= (one(T) - t) .* jacobian_target(cfg) .+ t .* jacobian_start(cfg)
 end
 
-function jacobian!(r::JacobianDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
+function jacobian!(r::JacobianDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_and_jacobian_start_target!(cfg, H, x)
 
     r.value .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
@@ -166,24 +166,24 @@ function jacobian!(r::JacobianDiffResult, H::StraightLineHomotopy{T}, x::Abstrac
     r
 end
 
-function jacobian(H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
+function jacobian(H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     u = similar(jacobian_target(cfg))
-    jacobian!(u, H, x, t, cfg)
+    jacobian!(u, H, x, t, cfg, precomputed)
     u
 end
 
-function dt!(u, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
-    evaluate_start_target!(cfg, H, x)
+function dt!(u, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    evaluate_start_target!(cfg, H, x, precomputed)
     u .= value_start(cfg) .- value_target(cfg)
 end
-function dt(H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
+function dt(H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     u = similar(value_start(cfg))
-    dt!(u, H, x, t, cfg)
+    dt!(u, H, x, t, cfg, precomputed)
     u
 end
 
-function dt!(r::DtDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig) where {T<:Number}
-    evaluate_start_target!(cfg, H, x)
+function dt!(r::DtDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    evaluate_start_target!(cfg, H, x, precomputed)
     r.value .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
     r.dt .= value_start(cfg) .- value_target(cfg)
     r

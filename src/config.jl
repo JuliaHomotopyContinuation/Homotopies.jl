@@ -1,4 +1,13 @@
-export PolynomialHomotopyConfig
+export PolynomialHomotopyConfig, config
+
+"""
+    config(H::AbstractHomotopy, [x])
+
+Create a homotopy corresponding to the homotopy type.
+For a `AbstractPolynomialHomotopy` this is just `PolynomialHomotopyConfig`.
+"""
+config(H::AbstractPolynomialHomotopy) = PolynomialHomotopyConfig(H)
+config(H::AbstractPolynomialHomotopy, x) = PolynomialHomotopyConfig(H, x)
 
 """
     PolynomialHomotopyConfig(H::AbstractPolynomialHomotopy{T}, [x::AbstractVector{S}])
@@ -38,26 +47,27 @@ end
 function evaluate_start_target!(
     cfg::PolynomialHomotopyConfig,
     H::AbstractPolynomialHomotopy,
-    x::Vector)
+    x::Vector,
+    precomputed=false)
 
-    FP.evaluate!(cfg.result_start.value, H.start, x, cfg.start)
-    FP.evaluate!(cfg.result_target.value, H.target, x, cfg.target)
+    FP.evaluate!(cfg.result_start.value, H.start, x, cfg.start, precomputed)
+    FP.evaluate!(cfg.result_target.value, H.target, x, cfg.target, precomputed)
 end
 
 function jacobian_start_target!(
     cfg::PolynomialHomotopyConfig,
     H::AbstractPolynomialHomotopy,
-    x::Vector)
+    x::Vector,
+    precomputed=false)
 
-    FP.jacobian!(cfg.result_start.jacobian, H.start, x, cfg.start)
-    FP.jacobian!(cfg.result_target.jacobian, H.target, x, cfg.target)
+    FP.jacobian!(cfg.result_start.jacobian, H.start, x, cfg.start, precomputed)
+    FP.jacobian!(cfg.result_target.jacobian, H.target, x, cfg.target, precomputed)
 end
 
 function evaluate_and_jacobian_start_target!(
     cfg::PolynomialHomotopyConfig,
     H::AbstractPolynomialHomotopy,
-    x::Vector
-    )
+    x::Vector)
     FP.jacobian!(cfg.result_start, H.start, x, cfg.start)
     FP.jacobian!(cfg.result_target, H.target, x, cfg.target)
 end
