@@ -15,7 +15,7 @@ Construct the homotopy `t * start + (1-t) * target`.
 
 You can also force a specific coefficient type `T`.
 """
-struct StraightLineHomotopy{T<:Number} <: AbstractPolynomialHomotopy{T}
+mutable struct StraightLineHomotopy{T<:Number} <: AbstractPolynomialHomotopy{T}
     start::Vector{FP.Polynomial{T}}
     target::Vector{FP.Polynomial{T}}
 
@@ -57,6 +57,8 @@ struct StraightLineHomotopy{T<:Number} <: AbstractPolynomialHomotopy{T}
     end
 end
 
+const SLH{T} = StraightLineHomotopy{T}
+
 #
 # CONSTRUCTORS
 #
@@ -81,60 +83,105 @@ function StraightLineHomotopy(
     StraightLineHomotopy{U}([s], [t])
 end
 
+
 #
 # SHOW
 #
-function Base.show(io::IO, H::StraightLineHomotopy)
+function Base.show(io::IO, H::SLH)
     start = join(string.(H.start), ", ")
     target = join(string.(H.target), ", ")
     println(io, typeof(H), "(", "(1-t)⋅[", target, "] + t⋅[", start , "]", ")")
 end
 
+
+function Base.deepcopy(H::SLH)
+    StraightLineHomotopy(deepcopy(H.start), deepcopy(H.target))
+end
+
 #
 # EQUALITY
 #
-function ==(H1::StraightLineHomotopy, H2::StraightLineHomotopy)
+function ==(H1::SLH, H2::SLH)
     H1.start == H2.start && H1.target == H2.target
 end
-function Base.isequal(H1::StraightLineHomotopy, H2::StraightLineHomotopy)
+function Base.isequal(H1::SLH, H2::SLH)
     Base.isequal(H1.start, H2.start) && Base.isequal(H1.target, H2.target)
 end
 
 #
 # PROMOTION AND CONVERSION
 #
-function Base.promote_rule(
-    ::Type{StraightLineHomotopy{T}},
-    ::Type{StraightLineHomotopy{S}}) where {S<:Number,T<:Number}
-    StraightLineHomotopy{promote_type(T,S)}
-end
-function Base.promote_rule(
-    ::Type{StraightLineHomotopy{T}},
-    ::Type{S}) where {S<:Number,T<:Number}
-    StraightLineHomotopy{promote_type(T,S)}
-end
+Base.promote_rule(::Type{SLH{T}}, ::Type{SLH{S}}) where {S<:Number,T<:Number} = SLH{promote_type(T,S)}
+Base.promote_rule(::Type{SLH}, ::Type{S}) where {S<:Number} = SLH{S}
+Base.promote_rule(::Type{SLH{T}}, ::Type{S}) where {S<:Number,T<:Number} = SLH{promote_type(T,S)}
 
-function Base.convert(
-    ::Type{StraightLineHomotopy{T}},
-    H::StraightLineHomotopy) where {T}
-    StraightLineHomotopy{T}(H.start, H.target)
-end
+Base.convert(::Type{SLH{T}}, H::SLH) where {T} = StraightLineHomotopy{T}(H.start, H.target)
+
 
 #
 # EVALUATION + DIFFERENTATION
 #
-function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
-    map!(u, H.target, H.start) do f, g
-        (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
+function evaluate!(u::AbstractVector, H::SLH{T}, x::Vector, t::Number) where T
+    for i = 1:length(H.target)
+        f = H.target[i]
+        g = H.start[i]
+        u[i] = (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
     end
+    u
 end
-function evaluate(H::StraightLineHomotopy{T}, x::Vector{T}, t::Number) where {T<:Number}
-    evaluate!(zeros(H.target, T), H, x,  t)
+function evaluate(H::SLH{T}, x::Vector{S}, t::Number) where {T, S}
+    evaluate!(zeros(H.target, promote_type(T, S)), H, x, t)
 end
-(H::StraightLineHomotopy)(x,t) = evaluate(H,x,t)
+(H::SLH)(x,t) = evaluate(H,x,t)
 
 
-function weylnorm(H::StraightLineHomotopy{T})  where {T<:Number}
+function evaluate!(u::AbstractVector{T}, H::SLH, x::Vector, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    evaluate_start_target!(cfg, H, x, precomputed)
+    u .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
+end
+
+function evaluate(H::SLH{T}, x::Vector{S}, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T, S}
+    evaluate!(zeros(H.target, promote_type(T, S)), H, x, t, cfg, precomputed)
+end
+
+function jacobian!(u::AbstractMatrix, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    jacobian_start_target!(cfg, H, x, precomputed)
+
+    u .= (one(T) - t) .* jacobian_target(cfg) .+ t .* jacobian_start(cfg)
+end
+
+function jacobian!(r::JacobianDiffResult, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    evaluate_and_jacobian_start_target!(cfg, H, x)
+
+    r.value .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
+    r.jacobian = (one(T) - t) .* jacobian_target(cfg) .+ t .* jacobian_start(cfg)
+    r
+end
+
+function jacobian(H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    u = similar(jacobian_target(cfg))
+    jacobian!(u, H, x, t, cfg, precomputed)
+    u
+end
+
+function dt!(u, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    evaluate_start_target!(cfg, H, x, precomputed)
+    u .= value_start(cfg) .- value_target(cfg)
+end
+function dt(H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    u = similar(value_start(cfg))
+    dt!(u, H, x, t, cfg, precomputed)
+    u
+end
+
+function dt!(r::DtDiffResult, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    evaluate_start_target!(cfg, H, x, precomputed)
+    r.value .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
+    r.dt .= value_start(cfg) .- value_target(cfg)
+    r
+end
+
+function weylnorm(H::SLH{T})  where {T<:Number}
     f = FP.homogenize.(H.start)
     g = FP.homogenize.(H.target)
     λ_1 = FP.weyldot(f,f)
@@ -145,56 +192,3 @@ function weylnorm(H::StraightLineHomotopy{T})  where {T<:Number}
         sqrt(abs2(one(T) - t) * λ_1 + 2 * real((one(T) - t) * conj(t) * λ_2) + abs2(t) * λ_3)
     end
 end
-
-function jacobian!(H::StraightLineHomotopy{T}) where {T<:Number}
-    J_start = differentiate(H.start)
-    J_target = differentiate(H.target)
-
-    function (u, x, t)
-        map!(u, J_target, J_start) do f, g
-            (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
-        end
-    end
-end
-function jacobian(H::StraightLineHomotopy{T}) where {T<:Number}
-    J_start = differentiate(H.start)
-    J_target = differentiate(H.target)
-
-    function (x, t)
-        map(J_target, J_start) do f, g
-            (one(T) - t) * FP.evaluate(f, x) + t * FP.evaluate(g, x)
-        end
-    end
-end
-
-function dt!(H::StraightLineHomotopy{T}) where {T<:Number}
-    function (u, x, ::Number)
-        map!(u, H.target, H.start) do f, g
-            FP.evaluate(g, x) - FP.evaluate(f, x)
-        end
-     end
-end
-function dt(H::StraightLineHomotopy{T}) where {T<:Number}
-    function (x, ::Number)
-        map(H.target, H.start) do f, g
-            FP.evaluate(g, x) - FP.evaluate(f, x)
-        end
-     end
-end
-
-function homogenize(H::StraightLineHomotopy)
-    typeof(H)(FP.homogenize.(H.start), FP.homogenize.(H.target))
-end
-function dehomogenize(H::StraightLineHomotopy)
-    typeof(H)(FP.dehomogenize.(H.start), FP.dehomogenize.(H.target))
-end
-
-function ishomogenized(H::StraightLineHomotopy)
-    all(FP.ishomogenized.(H.start)) && all(FP.ishomogenized.(H.target))
-end
-function ishomogenous(H::StraightLineHomotopy)
-    all(FP.ishomogenous.(H.start)) && all(FP.ishomogenous.(H.target))
-end
-
-nvariables(H::StraightLineHomotopy) = FP.nvariables(H.start[1])
-Base.length(H::StraightLineHomotopy) = length(H.start)
