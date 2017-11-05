@@ -137,6 +137,13 @@ function Base.promote_rule(
     GeodesicOnTheSphere{promote_type(T,S)}
 end
 
+function Base.promote_rule(
+    ::Type{GeodesicOnTheSphere},
+    ::Type{S}) where {S<:Number}
+    GeodesicOnTheSphere{S}
+end
+
+
 function Base.convert(
     ::Type{GeodesicOnTheSphere{T}},
     H::GeodesicOnTheSphere) where {T}

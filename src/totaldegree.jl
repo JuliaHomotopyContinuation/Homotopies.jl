@@ -119,5 +119,5 @@ function totaldegree_startsystem(F::Vector{FP.Polynomial{Complex{T}}}; unitroots
         FP.Polynomial(exponents, coeffs, vars)
     end
 
-    G, TotalDegreeSolutionIterator(degrees, b)
+    G, collect(TotalDegreeSolutionIterator(degrees, b))::Vector{Vector{Complex{T}}}
 end
