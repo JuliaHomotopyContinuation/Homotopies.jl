@@ -33,22 +33,6 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "index.html#Homotopy.StraightLineHomotopy",
-    "page": "Introduction",
-    "title": "Homotopy.StraightLineHomotopy",
-    "category": "Type",
-    "text": "StraightLineHomotopy(start, target)\n\nConstruct the homotopy t * start + (1-t) * target.\n\nstart and target have to match and to be one of the following\n\nVector{<:MP.AbstractPolynomial} where MP is MultivariatePolynomials\nMP.AbstractPolynomial\nVector{<:FP.Polynomial} where FP is FixedPolynomials\n\nStraightLineHomotopy{T}(start, target)\n\nYou can also force a specific coefficient type T.\n\n\n\n"
-},
-
-{
-    "location": "index.html#Homotopy.GammaTrickHomotopy",
-    "page": "Introduction",
-    "title": "Homotopy.GammaTrickHomotopy",
-    "category": "Type",
-    "text": "GammaTrickHomotopy(start, target, [γ])\n\nConstruct the homotopy (1-t)⋅target + t⋅γ⋅start. If γ is not supplied it will be drawn randomly and uniformly from the complex unit circle.\n\nstart and target have to match and to be one of the following\n\nVector{<:MP.AbstractPolynomial} where MP is MultivariatePolynomials\nMP.AbstractPolynomial\nVector{<:FP.Polynomial} where FP is FixedPolynomials\n\nGammaTrickHomotopy(start, target, seed::Int)\n\nYou can also supply a seed for the RNG which is used to draw γ, i.e. subsequent invocations with the same seed will produce the same γ.\n\nGammaTrickHomotopy{T}(start, target, [γ])\nGammaTrickHomotopy{T}(start, target, seed::Int)\n\nYou can also force a specific coefficient type T.\n\n\n\n"
-},
-
-{
     "location": "index.html#Polynomial-homotopies-1",
     "page": "Introduction",
     "title": "Polynomial homotopies",
@@ -77,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Interface",
     "title": "Homotopy.evaluate",
     "category": "Function",
-    "text": "evaluate(H::AbstractHomotopy, x, t)\n\nEvaluate the homotopy H at x to time t, i.e. H(xt)\n\n\n\n"
+    "text": "evaluate(H::AbstractPolynomialHomotopy, x, t)\n\nEvaluate the homotopy H at x to time t, i.e. H(xt).\n\nevaluate(H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialHomotopyConfig)\n\nEvaluate the homotopy H at x to time t using the precompuated values in cfg. Note that this is significantly faster than evaluate(H, x, t).\n\n\n\n"
 },
 
 {
@@ -85,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Interface",
     "title": "Homotopy.evaluate!",
     "category": "Function",
-    "text": "evaluate!(u::Vector, H::AbstractHomotopy, x, t)\n\nEvaluate the homotopy H at x to time t, i.e. H(xt), and store the result in u. Use this instead of evaluate to avoid allocations.\n\n\n\n"
+    "text": "evaluate!(u::Vector, H::AbstractPolynomialHomotopy, x, t)\n\nEvaluate the homotopy H at x to time t, i.e. H(xt), and store the result in u.\n\nevaluate!(u::AbstractVector, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialHomotopyConfig)\n\nEvaluate the homotopy H at x to time t using the precompuated values in cfg and store the result in u.\n\n\n\n"
 },
 
 {
@@ -101,7 +85,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Interface",
     "title": "Homotopy.jacobian",
     "category": "Function",
-    "text": "jacobian(H::AbstractHomotopy)\n\nCompute an evaluation function (x, t) -> J_H(x,t) of the jacobian J_H of the homotopy H. The jacobian is constructed w.r.t. x, i.e. it doesn't contain the partial derivatives w.r.t. t.\n\n\n\n"
+    "text": "jacobian(H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialHomotopyConfig)\n\nCompute the jacobian of H at x and t using the precomputed values in cfg. The jacobian is constructed w.r.t. x, i.e. it doesn't contain the partial derivatives w.r.t. t.\n\n\n\n"
 },
 
 {
@@ -109,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Interface",
     "title": "Homotopy.jacobian!",
     "category": "Function",
-    "text": "jacobian!(H::AbstractHomotopy)\n\nCompute an inplace evaluation function (u, x, t) -> u := J_H(x,t) of the jacobian J_H of the homotopy H. Use this instead of jacobian to avoid allocations.\n\n\n\n"
+    "text": "jacobian!(u, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialHomotopyConfig)\n\nCompute the jacobian of H at x and t using the precomputed values in cfg and store the result in u.\n\njacobian!(r::JacobianDiffResult, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialHomotopyConfig)\n\nCompute H(x t) and the jacobian of H at x and t at once using the precomputated values in cfg and store thre result in r. This is faster than computing both values separetely.\n\nExample\n\ncfg = PolynomialHomotopyConfig(H)\nr = JacobianDiffResult(cfg)\njacobian!(r, H, x, t, cfg)\n\nvalue(r) == H(x, t)\njacobian(r) == jacobian(H, x, t, cfg)\n\n\n\n"
 },
 
 {
@@ -117,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Interface",
     "title": "Homotopy.dt",
     "category": "Function",
-    "text": "dt(H::AbstractHomotopy)\n\nCompute an evaluation function (x, t) -> ∂H∂t(x,t) of the partial derivative fracHt of the homotopy H.\n\n\n\n"
+    "text": "dt(H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialHomotopyConfig)\n\nCompute the derivative of H w.r.t. t at x and t using the precomputed values in cfg.\n\n\n\n"
 },
 
 {
@@ -125,7 +109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Interface",
     "title": "Homotopy.dt!",
     "category": "Function",
-    "text": "dt!(H::AbstractHomotopy)\n\nCompute an inplace evaluation function (u, x, t) -> u := ∂H∂t(x,t) of the partial derivative fracHt of the homotopy H. Use this instead of dt to avoid allocations.\n\n\n\n"
+    "text": "dt!(u, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialHomotopyConfig)\n\nCompute the derivative of H w.r.t. t at x and t using the precomputed values in cfg and store the result in u.\n\ndt!(r::DtDiffResult, H::AbstractPolynomialHomotopy, x, t, cfg::PolynomialHomotopyConfig)\n\nCompute the derivative of H w.r.t. t at x and t using the precomputed values in cfg and store the result in r. This is faster than computing both values separetely.\n\nExample\n\ncfg = PolynomialHomotopyConfig(H)\nr = DtDiffResult(cfg)\ndt!(r, H, x, t, cfg)\n\nvalue(r) == H(x, t)\ndt(r) == dt(H, x, t, cfg)\n\n\n\n"
 },
 
 {
@@ -189,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Interface",
     "title": "Homotopy.weylnorm",
     "category": "Function",
-    "text": "weylnorm(H::AbstractHomotopy)\n\nCreates a function with variable t that computes the Weyl norm (or Bombieri norm) of H(xt). See here for details about the Weyl norm.\n\n\n\n"
+    "text": "weylnorm(H::AbstractPolynomialHomotopy)\n\nCreates a function with variable t that computes the Weyl norm (or Bombieri norm) of H(xt). See here for details about the Weyl norm.\n\n\n\n"
 },
 
 {
@@ -261,7 +245,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Higher level constructs",
     "title": "Homotopy.randomsystem",
     "category": "Function",
-    "text": "randomsystem([T=Complex128,] nequations::Int, nvars::Int; mindegree=0, maxdegree=5, rng=Base.Random.GLOBAL_RNG)\n\nCreates a random polynomial system of nequations equations with nvars variables (named x_1, ...x_nvars). Each polynomial has a total degree uniformly drawn from mindegree maxdegree. The coefficients are drawn independently from the given rng.\n\nrandomsystem([T=Complex128,] degrees::Vector{Int}, variables::Vector{Symbol}; rng=N(0,1))\n\nCreate a random polynomial system with the given degrees and variables.\n\n\n\n"
+    "text": "randomsystem([T=Complex128,] nequations::Int, nvars::Int; mindegree=0, maxdegree=5, rng=Base.Random.GLOBAL_RNG, density=rand() * 0.8 + 0.1)\n\nCreates a random polynomial system of nequations equations with nvars variables (named x_1, ...x_nvars). Each polynomial has a total degree uniformly drawn from mindegree maxdegree. The coefficients are drawn independently from the given rng. With density you can control how many coefficients are non-zero. A value of 1.0 creates a dense polynomial (i.e. every coefficient is non-zero). A value of 0.5 creates a polynomial where only half of all monomials are non zero.\n\nrandomsystem([T=Complex128,] degrees::Vector{Int}, variables::Vector{Symbol}; rng=N(0,1))\n\nCreate a random polynomial system with the given degrees and variables.\n\n\n\n"
 },
 
 {
