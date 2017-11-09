@@ -137,7 +137,7 @@ end
 
 function evaluate!(u::AbstractVector{T}, H::SLH, x::Vector, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_start_target!(cfg, H, x, precomputed)
-    u .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
+    u .= (one(t) - t) .* value_target(cfg) .+ t .* value_start(cfg)
 end
 
 function evaluate(H::SLH{T}, x::Vector{S}, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T, S}
@@ -147,14 +147,14 @@ end
 function jacobian!(u::AbstractMatrix, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     jacobian_start_target!(cfg, H, x, precomputed)
 
-    u .= (one(T) - t) .* jacobian_target(cfg) .+ t .* jacobian_start(cfg)
+    u .= (one(t) - t) .* jacobian_target(cfg) .+ t .* jacobian_start(cfg)
 end
 
 function jacobian!(r::JacobianDiffResult, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_and_jacobian_start_target!(cfg, H, x)
 
-    r.value .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
-    r.jacobian = (one(T) - t) .* jacobian_target(cfg) .+ t .* jacobian_start(cfg)
+    r.value .= (one(t) - t) .* value_target(cfg) .+ t .* value_start(cfg)
+    r.jacobian = (one(t) - t) .* jacobian_target(cfg) .+ t .* jacobian_start(cfg)
     r
 end
 
