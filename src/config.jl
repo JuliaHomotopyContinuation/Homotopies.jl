@@ -24,8 +24,8 @@ mutable struct PolynomialHomotopyConfig{T} <: AbstractHomotopyConfig{T}
     start::FP.JacobianConfig{T}
     target::FP.JacobianConfig{T}
 
-    result_start::FP.JacobianDiffResult{T}
-    result_target::FP.JacobianDiffResult{T}
+    result_start::FP.JacobianDiffResult{T, Vector{T}, Matrix{T}}
+    result_target::FP.JacobianDiffResult{T, Vector{T}, Matrix{T}}
 end
 
 function PolynomialHomotopyConfig(H::AbstractPolynomialHomotopy{T}) where T
