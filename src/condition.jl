@@ -31,7 +31,8 @@ function κ(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyCo
     real(f * inv(σ))
 end
 
-function kappa(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyConfig(H))=κ(H, z, t, cfg)
+kappa(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyConfig(H))=κ(H, z, t, cfg)
+
 
 
 """
@@ -63,7 +64,7 @@ function κ_norm(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomot
     real(f * inv(σ))
 end
 
-function kappa_norm(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyConfig(H))=κ_norm(H, z, t, cfg)
+kappa_norm(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyConfig(H))=κ_norm(H, z, t, cfg)
 
 
 """
@@ -99,4 +100,4 @@ function μ_norm(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomot
     end
 end
 
-function mu_norm(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyConfig(H))=μ_norm(H, z, t, cfg)
+mu_norm(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyConfig(H))=μ_norm(H, z, t, cfg)
