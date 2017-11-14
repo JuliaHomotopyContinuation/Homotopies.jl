@@ -22,11 +22,8 @@ function κ(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyCo
     M = diagm(map(d_i -> norm_z ^ (1-d_i), FP.degree.(H.start)))
 
     _, s, _ = svd(M*D)
-    if ishomogenized(H) || ishomogenous(H)
-        σ = s[end-1]
-    else
-        σ = s[end]
-    end
+    σ = s[end]
+
 
     real(f * inv(σ))
 end
@@ -55,11 +52,7 @@ function κ_norm(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomot
     M = diagm(map(d_i -> inv(sqrt(d_i)) * norm_z ^ (1-d_i), FP.degree.(H.start)))
 
     _, s, _ = svd(M*D)
-    if ishomogenized(H) || ishomogenous(H)
-        σ = s[end-1]
-    else
-        σ = s[end]
-    end
+    σ = s[end]
 
     real(f * inv(σ))
 end
