@@ -10,7 +10,7 @@
     t=1.0
 
     H = StraightLineHomotopy(f,g)
-    @test κ(H,z,t) == 1/sqrt(2)
+    @test κ(H,z,t) ≈ 1/sqrt(2)
     @test κ_norm(H,z,t) ≈ 1.0
     @test μ_norm(H,z,t) ≈ 1.0
 end
@@ -25,7 +25,7 @@ end
     t=1.0
 
     H = GeodesicOnTheSphere(f,g)
-    @test κ(H,z,t) == 1/sqrt(2)
+    @test κ(H,z,t) ≈ 1/sqrt(2)
     @test κ_norm(H,z,t) ≈ 1.0
     @test μ_norm(H,z,t) ≈ 1.0
 end
