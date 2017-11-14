@@ -28,14 +28,13 @@ mutable struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
     end
 
     function GeodesicOnTheSphere{T}(start::Vector{FP.Polynomial{T}}, target::Vector{FP.Polynomial{T}}) where {T<:Number}
-        start = FP.homogenize.(start)
-        target = FP.homogenize.(target)
+        start, target = homogenize(start, target)
 
         @assert length(start) == length(target) "Expected the same number of polynomials, but got $(length(start)) and $(length(target))"
         s_nvars = maximum(FP.nvariables.(start))
         @assert all(s_nvars .== FP.nvariables.(start)) "Not all polynomials of the start system have $(s_nvars) variables."
         t_nvars = maximum(FP.nvariables.(target))
-        @assert all(t_nvars .== FP.nvariables.(target)) "Not all polynomials of the target system have $(t_nvars) variables."
+        @assert all(t_nvars .== FP.nvariables.(target)) "Not all polynomials of the target system have $(t_nvars) variables instead of $(s_nvars)."
         @assert s_nvars == t_nvars "Expected start and target system to have the same number of variables, but got $(s_nvars) and $(t_nvars)."
 
         FP.scale_coefficients!.(start, inv(FP.weylnorm(start)))

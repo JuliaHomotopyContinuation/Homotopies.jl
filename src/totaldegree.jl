@@ -104,20 +104,47 @@ function totaldegree_startsystem(F::Vector{FP.Polynomial{Complex{T}}}; unitroots
     end
 
     n = length(degrees)
-    if n != length(vars)
+    N = length(vars)
+    make_homogenous = !all(FP.ishomogenous, F) && length(vars) == length(F) + 1
+    if n + 1 == N
+        if !all(FP.ishomogenous, F)
+            return error("In order to create a total degree start system your input system needs " *
+                "to have the same number of variables as number of equations or to have N variables
+                and N - 1 homogenous polynomials. Currently your system has " *
+                "$(length(vars)) variables and $(length(degrees)) equations and is not homogenous.")
+        end
+
+        G = map(2:N, degrees) do i, d
+            exponents = zeros(Int, N, 2)
+            exponents[i, 1] = d
+            exponents[1, 2] = d
+            coeffs = zeros(Complex{T}, 2)
+            coeffs[1] = one(Complex{T})
+            coeffs[2] = -b[i - 1]
+            FP.Polynomial(exponents, coeffs, vars)
+        end
+
+        startsolutions::Vector{Vector{Complex{T}}} =
+            map(TotalDegreeSolutionIterator(degrees, b)) do sol
+                unshift!(sol, 1)
+            end
+        G, startsolutions
+    elseif n != N
         return error("In order to create a total degree start system your input system needs " *
             "to have the same number of variables as number of equations. Currently your system has " *
             "$(length(vars)) variables and $(length(degrees)) equations.")
+    else
+        G = map(1:n, degrees) do i, d
+            exponents = zeros(Int, n, 2)
+            exponents[i, 1] = d
+            coeffs = zeros(Complex{T}, 2)
+            coeffs[1] = one(Complex{T})
+            coeffs[2] = -b[i]
+            FP.Polynomial(exponents, coeffs, vars)
+        end
+        G, collect(TotalDegreeSolutionIterator(degrees, b))::Vector{Vector{Complex{T}}}
     end
-
-    G = map(1:n, degrees) do i, d
-        exponents = zeros(Int, n, 2)
-        exponents[i, 1] = d
-        coeffs = zeros(Complex{T}, 2)
-        coeffs[1] = one(Complex{T})
-        coeffs[2] = -b[i]
-        FP.Polynomial(exponents, coeffs, vars)
-    end
-
-    G, collect(TotalDegreeSolutionIterator(degrees, b))::Vector{Vector{Complex{T}}}
+end
+function totaldegree_startsystem(F::Vector{FP.Polynomial{T}}; kwargs...) where {T<:Number}
+    totaldegree_startsystem(convert.(FP.Polynomial{complex(float(T))}, F); kwargs...)
 end

@@ -1,5 +1,5 @@
 @testset "Total degree" begin
-    @polyvar x y
+    @polyvar x y z
 
     H, solutions = totaldegree(StraightLineHomotopy{Complex128}, [x^2+y+1, x^3*y-2])
     @test length(solutions) == 8
@@ -11,6 +11,13 @@
     for sol in solutions
         @test norm(sol) ≈ norm(ones(2)) atol=1e-14
     end
+
+    f = x^2+y^2+y*z
+    g = x*z + y * z
+
+    H, s = totaldegree(GeodesicOnTheSphere, [f, g])
+    @test nvariables(H) == 3
+
 end
 
 

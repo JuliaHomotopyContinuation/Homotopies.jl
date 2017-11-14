@@ -24,18 +24,35 @@ function randomgamma(::Type{T}, seed::Int) where {T<:Complex}
     convert(T, exp(im * θ))
 end
 
+
+function homogenize(F::Vector{<:FP.Polynomial}, G::Vector{<:FP.Polynomial})
+    F_ishomogenous = all(FP.ishomogenous, F)
+    G_ishomogenous = all(FP.ishomogenous, G)
+
+    if F_ishomogenous && G_ishomogenous
+        F1 = map(f -> FP.homogenize(f, respect_homogenous=true), F)
+        G1 = map(g -> FP.homogenize(g, respect_homogenous=true), G)
+        (F1, G1)
+    else
+        F1 = map(f -> FP.homogenize(f, respect_homogenous=false), F)
+        G1 = map(g -> FP.homogenize(g, respect_homogenous=false), G)
+        (F1, G1)
+    end
+end
+
 function homogenize(H::AbstractPolynomialHomotopy)
-    typeof(H)(FP.homogenize.(H.start), FP.homogenize.(H.target))
+    G, F = homogenize(H.start, H.target)
+    typeof(H)(G, F)
 end
 function dehomogenize(H::AbstractPolynomialHomotopy)
     typeof(H)(FP.dehomogenize.(H.start), FP.dehomogenize.(H.target))
 end
 
 function ishomogenized(H::AbstractPolynomialHomotopy)
-    all(FP.ishomogenized.(H.start)) && all(FP.ishomogenized.(H.target))
+    all(FP.ishomogenized, H.start) && all(FP.ishomogenized, H.target)
 end
 function ishomogenous(H::AbstractPolynomialHomotopy)
-    all(FP.ishomogenous.(H.start)) && all(FP.ishomogenous.(H.target))
+    all(FP.ishomogenous, H.start) && all(FP.ishomogenous, H.target)
 end
 
 nvariables(H::AbstractPolynomialHomotopy) = FP.nvariables(H.start[1])
