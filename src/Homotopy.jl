@@ -24,4 +24,6 @@ module Homotopy
 
     include("totaldegree.jl")
     include("randomhomotopy.jl")
+
+    include("condition.jl")
 end
