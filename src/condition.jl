@@ -6,7 +6,7 @@ export κ, κ_norm, μ_norm, kappa, kappa_norm, mu_norm
 
 Computes the condition number of H at (z, t) (with config cfg). See Condition^[1] for details
 
-Proposition 16.10: κ(f,z) := ‖f‖ ‖ Df(z)^dagger diag(‖ z ‖^{d_i-1}) ‖
+Proposition 16.10: κ(f,z) := ‖f‖ ‖ Df(z)^† diag(‖ z ‖^{d_i-1}) ‖
 
 [1]: Condition, Bürgisser and Cucker
 """
@@ -37,7 +37,7 @@ kappa(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyConfig(H
 
 Computes the condition number of H at (z, t) (with config cfg). See Condition^[1] for details
 
-Eq. (16.11): κ_norm(f,z) := ‖f‖ ‖ Df(z)^dagger diag(√{d_i}‖ z ‖^{d_i-1}) ‖
+Eq. (16.11): κ_norm(f,z) := ‖f‖ ‖ Df(z)^† diag(√{d_i}‖ z ‖^{d_i-1}) ‖
 
 [1]: Condition, Bürgisser and Cucker
 """
