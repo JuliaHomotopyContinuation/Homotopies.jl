@@ -49,7 +49,7 @@
     u = zeros(2)
     dt!(u, H, [1, 2, 2.0], 0.0, cfg)
     @test u == dt(H, [1, 2, 2.0], 0.0, cfg)
-    @test string(H) == "Homotopy.GeodesicOnTheSphere{Float64}((1-t)⋅[0.25x+0.25y+0.75z, 0.25y+0.5z] + t⋅[0.25x+0.25y+0.75z, 0.25x+0.5z]) with angle $(H.α)\n"
+    @test string(H) == "Homotopy.GeodesicOnTheSphere{Float64} with 2 polynomials.\n"
 
     r = DtDiffResult(cfg)
     w = rand(3)

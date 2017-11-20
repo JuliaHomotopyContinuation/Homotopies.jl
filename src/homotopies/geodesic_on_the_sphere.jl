@@ -49,74 +49,11 @@ mutable struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
         new(start, target, α)
     end
 
-    function GeodesicOnTheSphere{T}(
-        start::Vector{FP.Polynomial{U}},
-        target::Vector{FP.Polynomial{V}}
-        ) where {T<:Number, U<:Number, V<:Number}
-        GeodesicOnTheSphere{T}(
-            convert(Vector{FP.Polynomial{T}}, start),
-            convert(Vector{FP.Polynomial{T}}, target))
-    end
-
-    function GeodesicOnTheSphere{T}(
-        start::MP.AbstractPolynomial,
-        target::MP.AbstractPolynomial) where {T<:Number}
-        s, t = convert(Vector{FP.Polynomial{T}}, [start, target])
-        GeodesicOnTheSphere{T}([s], [t])
-    end
-
-    function GeodesicOnTheSphere{T}(
-        start::Vector{<:MP.AbstractPolynomial},
-        target::Vector{<:MP.AbstractPolynomial}) where {T<:Number}
-        GeodesicOnTheSphere{T}(
-            convert(Vector{FP.Polynomial{T}}, start),
-            convert(Vector{FP.Polynomial{T}}, target))
-    end
+    GeodesicOnTheSphere{T}(start, target) where {T<:Number} = construct(GeodesicOnTheSphere{T}, (start, target))
 end
 
-#
-# CONSTRUCTORS
-#
-function GeodesicOnTheSphere(
-    start::Vector{FP.Polynomial{T}},
-    target::Vector{FP.Polynomial{S}}) where {T<:Number, S<:Number}
-    GeodesicOnTheSphere{promote_type(S,T,Float64)}(start,target)
-end
-function GeodesicOnTheSphere(
-    start::Vector{<:MP.AbstractPolynomial{T}},
-    target::Vector{<:MP.AbstractPolynomial{S}}) where {T<:Number, S<:Number}
-    P = promote_type(S, T, Float64)
-    GeodesicOnTheSphere{P}(
-        convert(Vector{FP.Polynomial{P}}, start),
-        convert(Vector{FP.Polynomial{P}}, target))
-end
-function GeodesicOnTheSphere(
-    start::MP.AbstractPolynomial{T},
-    target::MP.AbstractPolynomial{S}) where {T,S}
-    U = promote_type(S, T, Float64)
-    s, t = convert(Vector{FP.Polynomial{U}}, [start, target])
-    GeodesicOnTheSphere{U}([s], [t])
-end
+GeodesicOnTheSphere(start, target) = construct(GeodesicOnTheSphere, (start, target))
 
-#
-# SHOW
-#
-function Base.show(io::IO, H::GeodesicOnTheSphere)
-    start = join(string.(H.start), ", ")
-    target = join(string.(H.target), ", ")
-    println(io, typeof(H), "(", "(1-t)⋅[", target, "] + t⋅[", start , "]", ") with angle $(H.α)")
-end
-
-
-#
-# EQUALITY
-#
-function ==(H1::GeodesicOnTheSphere, H2::GeodesicOnTheSphere)
-    H1.start == H2.start && H1.target == H2.target && H1.α == H2.α
-end
-function Base.isequal(H1::GeodesicOnTheSphere, H2::GeodesicOnTheSphere)
-    Base.isequal(H1.start, H2.start) && Base.isequal(H1.target, H2.target) && Base.isequal(H1.α, H2.α)
-end
 
 function Base.deepcopy(H::GeodesicOnTheSphere{T}) where T
     GeodesicOnTheSphere{T}(deepcopy(H.start), deepcopy(H.target), H.α)
@@ -124,42 +61,23 @@ end
 #
 # PROMOTION AND CONVERSION
 #
-function Base.promote_rule(
-    ::Type{GeodesicOnTheSphere{T}},
-    ::Type{GeodesicOnTheSphere{S}}) where {S<:Number,T<:Number}
+function Base.promote_rule(::Type{GeodesicOnTheSphere{T}}, ::Type{GeodesicOnTheSphere{S}}) where {S<:Number,T<:Number}
     GeodesicOnTheSphere{promote_type(T,S)}
 end
-
-function Base.promote_rule(
-    ::Type{GeodesicOnTheSphere{T}},
-    ::Type{S}) where {S<:Number,T<:Number}
+function Base.promote_rule(::Type{GeodesicOnTheSphere{T}}, ::Type{S}) where {S<:Number,T<:Number}
     GeodesicOnTheSphere{promote_type(T,S)}
 end
-
-function Base.promote_rule(
-    ::Type{GeodesicOnTheSphere},
-    ::Type{S}) where {S<:Number}
+function Base.promote_rule(::Type{GeodesicOnTheSphere},::Type{S}) where {S<:Number}
     GeodesicOnTheSphere{S}
 end
 
-
-function Base.convert(
-    ::Type{GeodesicOnTheSphere{T}},
-    H::GeodesicOnTheSphere) where {T}
-    GeodesicOnTheSphere{T}(
-        convert.(FP.Polynomial{T}, H.start),
-        convert.(FP.Polynomial{T}, H.target),
-        H.α)
+function Base.convert(::Type{GeodesicOnTheSphere{T}}, H::GeodesicOnTheSphere) where {T}
+    GeodesicOnTheSphere{T}(convert.(FP.Polynomial{T}, H.start), convert.(FP.Polynomial{T}, H.target), H.α)
 end
 
 
-
-#
 # EVALUATION + DIFFERENTATION
 #
-function evaluate(H::GeodesicOnTheSphere{T}, x::Vector{S}, t::Number) where {T, S}
-    evaluate!(zeros(H.target, promote_type(T, S)), H, x, t)
-end
 (H::GeodesicOnTheSphere)(x,t) = evaluate(H,x,t)
 
 function λ(α, t)
@@ -184,10 +102,6 @@ function evaluate!(u::AbstractVector, H::GeodesicOnTheSphere{T}, x::Vector, t::N
     u
 end
 
-function evaluate(H::GeodesicOnTheSphere{T}, x::Vector{S}, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T, S}
-    evaluate!(zeros(H.target, promote_type(T, S)), H, x, t, cfg, precomputed)
-end
-
 function evaluate!(u::AbstractVector{T}, H::GeodesicOnTheSphere, x::Vector, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_start_target!(cfg, H, x, precomputed)
     λ_1, λ_2 = λ(H.α, t)
@@ -210,24 +124,11 @@ function jacobian!(r::JacobianDiffResult, H::GeodesicOnTheSphere{T}, x::Abstract
     r
 end
 
-function jacobian(H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
-    u = similar(jacobian_target(cfg))
-    jacobian!(u, H, x, t, cfg, precomputed)
-    u
-end
-
 function dt!(u, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_start_target!(cfg, H, x, precomputed)
     λ_1_dot, λ_2_dot = dλ(H.α, t)
     u .= λ_1_dot .* value_start(cfg) .+ λ_2_dot .* value_target(cfg)
 end
-
-function dt(H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
-    u = similar(value_start(cfg))
-    dt!(u, H, x, t, cfg, precomputed)
-    u
-end
-
 function dt!(r::DtDiffResult, H::GeodesicOnTheSphere{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_start_target!(cfg, H, x, precomputed)
     λ_1, λ_2 = λ(H.α, t)

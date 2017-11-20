@@ -100,7 +100,7 @@ function totaldegree_startsystem(F::Vector{FP.Polynomial{Complex{T}}}; unitroots
     if unitroots
         b = ones(Complex{T}, length(degrees))
     else
-        b = rand(Complex{T}, length(degrees))
+        b = convert.(Complex{T}, rand(Complex128, length(degrees)))
     end
 
     n = length(degrees)
