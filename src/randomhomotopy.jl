@@ -55,10 +55,15 @@ function randomsystem(::Type{T}, degrees::Vector{Int}, vars::Vector{Symbol}, rng
         for (j, index) in enumerate(indices)
             exp_matrix[:,j] .= exponents[index]
         end
-        coeffs = rand(rng, T, length(indices))
+        coeffs = randomcoeffs(rng, T, length(indices))
         FP.Polynomial(exp_matrix, coeffs, vars)
     end
 end
+
+randomcoeffs(rng, ::Type{Complex{BigFloat}}, n) = convert.(Complex{BigFloat}, rand(rng, Complex128, n))
+randomcoeffs(rng, ::Type{BigFloat}, n) = convert.(BigFloat, rand(rng, Float64, n))
+randomcoeffs(rng, ::Type{T}, n) where {T<:Number} = rand(rng, T, n)
+
 function randomsystem(degrees::Vector{Int}, vars::Vector{Symbol}; kwargs...)
     randomsystem(Complex128, degrees, vars; kwargs...)
 end

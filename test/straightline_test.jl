@@ -5,14 +5,15 @@
     h = y + z
 
 
-    @test StraightLineHomotopy(f, g) isa StraightLineHomotopy{Int64}
-    @test StraightLineHomotopy([f, f], [g, h]) isa StraightLineHomotopy{Int64}
+    @test StraightLineHomotopy(f, g) isa StraightLineHomotopy{Float64}
+    @test StraightLineHomotopy([f, f], [g, h]) isa StraightLineHomotopy{Float64}
     @test StraightLineHomotopy{Float64}([f, g], [f, h]) isa StraightLineHomotopy{Float64}
     @test StraightLineHomotopy{Float64}(f, g) isa StraightLineHomotopy{Float64}
     @test StraightLineHomotopy([FP.Polynomial(f)], [FP.Polynomial{Complex128}(f)]) isa StraightLineHomotopy{Complex128}
     @test_throws AssertionError StraightLineHomotopy{Complex128}([f], [g])
     @test_throws AssertionError StraightLineHomotopy{Complex128}([f], [f, f])
 
+    @test StraightLineHomotopy{BigFloat}(FP.Polynomial{Float64}.([f, f]), convert(Vector{FP.Polynomial{Float64}}, [g, h])) isa StraightLineHomotopy{BigFloat}
 
     H = StraightLineHomotopy{Float64}([f, g], [f, h])
     K = StraightLineHomotopy([f, g], [f, h])
@@ -54,7 +55,7 @@
     u = zeros(2)
     dt!(u, H, [1, 2, 2.0], 1.0, cfg)
     @test u == [0, -1]
-    @test string(H) == "Homotopy.StraightLineHomotopy{Float64}((1-t)⋅[x+y+2.0z, y+z] + t⋅[x+y+2.0z, x+z])\n"
+    @test string(H) == "Homotopy.StraightLineHomotopy{Float64} with 2 polynomials.\n"
 
     r = DtDiffResult(cfg)
     w = rand(3)

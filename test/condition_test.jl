@@ -1,6 +1,3 @@
-
-
-
 @testset "Condition StraightLineHomotopy" begin
     @polyvar x
     f = [x^2-1]

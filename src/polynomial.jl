@@ -1,5 +1,47 @@
 export gammatrick!
 
+
+#
+# EVALUATION + DIFFERENTATION
+#
+function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{S}, t::Number) where {T, S}
+    evaluate!(zeros(H.target, promote_type(T, S)), H, x, t)
+end
+
+
+function evaluate(H::AbstractPolynomialHomotopy{T}, x::Vector{S}, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T, S}
+    evaluate!(zeros(H.target, promote_type(T, S)), H, x, t, cfg, precomputed)
+end
+
+
+function jacobian(H::AbstractPolynomialHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    u = similar(jacobian_target(cfg))
+    jacobian!(u, H, x, t, cfg, precomputed)
+    u
+end
+
+function dt(H::AbstractPolynomialHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+    u = similar(value_start(cfg))
+    dt!(u, H, x, t, cfg, precomputed)
+    u
+end
+
+#
+# EQUALITY
+#
+function ==(H1::T, H2::T) where {T<:AbstractPolynomialHomotopy}
+    H1.start == H2.start && H1.target == H2.target
+end
+function Base.isequal(H1::T, H2::T) where {T<:AbstractPolynomialHomotopy}
+    Base.isequal(H1.start, H2.start) && Base.isequal(H1.target, H2.target)
+end
+
+function Base.show(io::IO, H::AbstractPolynomialHomotopy)
+    println(io, typeof(H), " with $(length(H.start)) polynomials.")
+end
+
+
+
 """
     gammatrick!(H::AbstractPolynomialHomotopy{Complex} [, seed::Int]])
 
