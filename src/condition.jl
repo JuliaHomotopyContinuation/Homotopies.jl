@@ -13,7 +13,6 @@ Proposition 16.10: κ(f,z) := ‖f‖ ‖ Df(z)^† diag(‖ z ‖^{d_i-1}) ‖
 
 
 function κ(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyConfig(H))
-
     weyl_norm=weylnorm(H)
     f = weyl_norm(t)
     D = jacobian(H,z,t,cfg)
@@ -21,11 +20,14 @@ function κ(H::AbstractHomotopy, z::Vector, t::Float64, cfg=PolynomialHomotopyCo
 
     M = diagm(map(d_i -> norm_z ^ (1-d_i), FP.degree.(H.start)))
 
-    _, s, _ = save_svd(M*D)
-    σ = s[end]
+    try
+        _, s, _ = save_svd(M*D)
+        σ = s[end]
 
-
-    real(f * inv(σ))
+        return real(f * inv(σ))
+    catch
+        Inf
+    end
 end
 
 save_svd(A::Matrix{BigFloat}) = svd(convert.(Float64, A))
