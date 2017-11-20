@@ -13,8 +13,7 @@
     @test_throws AssertionError StraightLineHomotopy{Complex128}([f], [g])
     @test_throws AssertionError StraightLineHomotopy{Complex128}([f], [f, f])
 
-    @test StraightLineHomotopy{BigFloat}(FP.Polynomial{Float64}.([f, f]),
-        convert(Vector{FP.Polynomial{Float64}}, [g, h]) isa StraightLineHomotopy{Float64}
+    @test StraightLineHomotopy{BigFloat}(FP.Polynomial{Float64}.([f, f]), convert(Vector{FP.Polynomial{Float64}}, [g, h])) isa StraightLineHomotopy{BigFloat}
 
     H = StraightLineHomotopy{Float64}([f, g], [f, h])
     K = StraightLineHomotopy([f, g], [f, h])
