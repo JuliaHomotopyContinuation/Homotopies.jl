@@ -49,10 +49,16 @@ mutable struct GeodesicOnTheSphere{T<:Number} <: AbstractPolynomialHomotopy{T}
         new(start, target, α)
     end
 
-    GeodesicOnTheSphere{T}(start, target) where {T<:Number} = construct(GeodesicOnTheSphere{T}, (start, target))
+    function GeodesicOnTheSphere{T}(start, target) where {T<:Number}
+        s, t = construct(T, start, target)
+        GeodesicOnTheSphere{T}(s, t)
+    end
 end
 
-GeodesicOnTheSphere(start, target) = construct(GeodesicOnTheSphere, (start, target))
+function GeodesicOnTheSphere(start, target)
+    T, s, t = construct(start, target)
+    GeodesicOnTheSphere{T}(s, t)
+end
 
 
 function Base.deepcopy(H::GeodesicOnTheSphere{T}) where T

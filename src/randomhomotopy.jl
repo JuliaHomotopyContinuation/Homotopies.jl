@@ -60,8 +60,8 @@ function randomsystem(::Type{T}, degrees::Vector{Int}, vars::Vector{Symbol}, rng
     end
 end
 
-randomcoeffs(rng, ::Complex{BigFloat}, n) = convert.(Complex{BigFloat}, rand(rng, Complex128, n))
-randomcoeffs(rng, ::BigFloat, n) = convert.(BigFloat, rand(rng, Float64, n))
+randomcoeffs(rng, ::Type{Complex{BigFloat}}, n) = convert.(Complex{BigFloat}, rand(rng, Complex128, n))
+randomcoeffs(rng, ::Type{BigFloat}, n) = convert.(BigFloat, rand(rng, Float64, n))
 randomcoeffs(rng, ::Type{T}, n) where {T<:Number} = rand(rng, T, n)
 
 function randomsystem(degrees::Vector{Int}, vars::Vector{Symbol}; kwargs...)

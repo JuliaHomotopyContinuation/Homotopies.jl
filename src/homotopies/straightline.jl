@@ -32,10 +32,16 @@ mutable struct StraightLineHomotopy{T<:Number} <: AbstractPolynomialHomotopy{T}
         new(start, target)
     end
 
-    StraightLineHomotopy{T}(start, target) where {T<:Number} = construct(StraightLineHomotopy{T}, (start, target))
+    function StraightLineHomotopy{T}(start, target) where {T<:Number}
+        s, t = construct(T, start, target)
+        StraightLineHomotopy{T}(s, t)
+    end
 end
 
-StraightLineHomotopy(start, target) = construct(StraightLineHomotopy, (start, target))
+function StraightLineHomotopy(start, target)
+    T, s, t = construct(start, target)
+    StraightLineHomotopy{T}(s, t)
+end
 
 const SLH{T} = StraightLineHomotopy{T}
 
