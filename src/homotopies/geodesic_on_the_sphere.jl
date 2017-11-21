@@ -3,9 +3,11 @@ export GeodesicOnTheSphere
 """
     GeodesicOnTheSphere(start, target)
 
-Homotopy is the geodesic from `g=start/|start|` (t=1) to `f=target/|target|`` (t=0):
-``H(x,t) = (cos(tα) - sin (tα)cos(α)/sin(α)) f + sin(tα) / sin(α) * g``,
-where ``α = cos <f,g>``. The constructor automatically homgenizes `start` and `target`.
+Homotopy is the geodesic from `g=start/|start|` (t=1) to `f=target/|target|` (t=0):
+
+```H(x,t) = (cos(tα) - sin (tα)cos(α)/sin(α)) f + sin(tα) / sin(α) * g```
+
+where ``α = cos |<f,g>|``. The constructor automatically homgenizes `start` and `target`.
 
 `start` and `target` have to match and to be one of the following
 * `Vector{<:MP.AbstractPolynomial}` where `MP` is [`MultivariatePolynomials`](https://github.com/blegat/MultivariatePolynomials.jl)
