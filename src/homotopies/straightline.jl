@@ -43,29 +43,27 @@ function StraightLineHomotopy(start, target)
     StraightLineHomotopy{T}(s, t)
 end
 
-const SLH{T} = StraightLineHomotopy{T}
-
 #
 # SHOW
 #
-function Base.deepcopy(H::SLH)
+function Base.deepcopy(H::StraightLineHomotopy)
     StraightLineHomotopy(deepcopy(H.start), deepcopy(H.target))
 end
 
 #
 # PROMOTION AND CONVERSION
 #
-Base.promote_rule(::Type{SLH{T}}, ::Type{SLH{S}}) where {S<:Number,T<:Number} = SLH{promote_type(T,S)}
-Base.promote_rule(::Type{SLH}, ::Type{S}) where {S<:Number} = SLH{S}
-Base.promote_rule(::Type{SLH{T}}, ::Type{S}) where {S<:Number,T<:Number} = SLH{promote_type(T,S)}
+Base.promote_rule(::Type{StraightLineHomotopy{T}}, ::Type{StraightLineHomotopy{S}}) where {S<:Number,T<:Number} = StraightLineHomotopy{promote_type(T,S)}
+Base.promote_rule(::Type{StraightLineHomotopy}, ::Type{S}) where {S<:Number} = StraightLineHomotopy{S}
+Base.promote_rule(::Type{StraightLineHomotopy{T}}, ::Type{S}) where {S<:Number,T<:Number} = StraightLineHomotopy{promote_type(T,S)}
 
-Base.convert(::Type{SLH{T}}, H::SLH) where {T} = StraightLineHomotopy{T}(H.start, H.target)
+Base.convert(::Type{StraightLineHomotopy{T}}, H::StraightLineHomotopy) where {T} = StraightLineHomotopy{T}(H.start, H.target)
 
 
 #
 # EVALUATION + DIFFERENTATION
 #
-function evaluate!(u::AbstractVector, H::SLH{T}, x::Vector, t::Number) where T
+function evaluate!(u::AbstractVector, H::StraightLineHomotopy{T}, x::Vector, t::Number) where T
     for i = 1:length(H.target)
         f = H.target[i]
         g = H.start[i]
@@ -73,21 +71,21 @@ function evaluate!(u::AbstractVector, H::SLH{T}, x::Vector, t::Number) where T
     end
     u
 end
-(H::SLH)(x,t) = evaluate(H,x,t)
+(H::StraightLineHomotopy)(x,t) = evaluate(H,x,t)
 
 
-function evaluate!(u::AbstractVector{T}, H::SLH, x::Vector, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+function evaluate!(u::AbstractVector{T}, H::StraightLineHomotopy, x::Vector, t::Number, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_start_target!(cfg, H, x, precomputed)
     u .= (one(t) - t) .* value_target(cfg) .+ t .* value_start(cfg)
 end
 
-function jacobian!(u::AbstractMatrix, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+function jacobian!(u::AbstractMatrix, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     jacobian_start_target!(cfg, H, x, precomputed)
 
     u .= (one(t) - t) .* jacobian_target(cfg) .+ t .* jacobian_start(cfg)
 end
 
-function jacobian!(r::JacobianDiffResult, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+function jacobian!(r::JacobianDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_and_jacobian_start_target!(cfg, H, x)
 
     r.value .= (one(t) - t) .* value_target(cfg) .+ t .* value_start(cfg)
@@ -95,19 +93,19 @@ function jacobian!(r::JacobianDiffResult, H::SLH{T}, x::AbstractVector, t, cfg::
     r
 end
 
-function dt!(u, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+function dt!(u, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_start_target!(cfg, H, x, precomputed)
     u .= value_start(cfg) .- value_target(cfg)
 end
 
-function dt!(r::DtDiffResult, H::SLH{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
+function dt!(r::DtDiffResult, H::StraightLineHomotopy{T}, x::AbstractVector, t, cfg::PolynomialHomotopyConfig, precomputed=false) where {T<:Number}
     evaluate_start_target!(cfg, H, x, precomputed)
     r.value .= (one(T) - t) .* value_target(cfg) .+ t .* value_start(cfg)
     r.dt .= value_start(cfg) .- value_target(cfg)
     r
 end
 
-function weylnorm(H::SLH{T})  where {T<:Number}
+function weylnorm(H::StraightLineHomotopy{T})  where {T<:Number}
     f = FP.homogenize.(H.start)
     g = FP.homogenize.(H.target)
     λ_1 = FP.weyldot(f,f)
