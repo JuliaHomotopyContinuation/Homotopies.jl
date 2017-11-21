@@ -1,4 +1,4 @@
-export gammatrick!
+export gammatrick!, gammatrick
 
 
 #
@@ -54,10 +54,32 @@ You can also pass a scaling factor directly.
 """
 function gammatrick!(H::AbstractPolynomialHomotopy{T}, γ::Union{AbstractFloat, Complex}) where {T<:Complex}
     FP.scale_coefficients!.(H.start, convert(T, γ))
-    H
+    γ
 end
 gammatrick!(H::AbstractPolynomialHomotopy{T}) where T = gammatrick!(H, randomgamma(T))
 gammatrick!(H::AbstractPolynomialHomotopy{T}, seed::Int) where T = gammatrick!(H, randomgamma(T, seed))
+
+"""
+    gammatrick(H::AbstractPolynomialHomotopy{Complex} , γ::Number)
+
+Scale the coefficients of the start system of `H` with `γ`.
+
+    gammatrick(H::AbstractPolynomialHomotopy{Complex})
+
+A a random complex number `γ` is picked uniformly from the (complex) unit circle and then
+scale the coefficients of the start system of `H` with `γ`.
+This returns the new `H` and `γ`.
+"""
+function gammatrick(H::AbstractPolynomialHomotopy)
+    K = deepcopy(H)
+    γ = gammatrick!(K)
+    K, γ
+end
+function gammatrick(H::AbstractPolynomialHomotopy, γ::Number)
+    K = deepcopy(H)
+    gammatrick!(K, γ)
+    K
+end
 
 randomgamma(::Type{T}) where {T<:Complex} = convert(T, exp(im * (rand() * 2π - π)))
 function randomgamma(::Type{T}, seed::Int) where {T<:Complex}
