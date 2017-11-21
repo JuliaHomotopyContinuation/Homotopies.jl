@@ -28,4 +28,6 @@ module Homotopies
     include("randomhomotopy.jl")
 
     include("condition.jl")
+
+    include("bigfloat_utilities.jl")
 end
