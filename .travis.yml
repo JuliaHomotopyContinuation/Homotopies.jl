@@ -27,11 +27,11 @@ matrix:
 
 ## uncomment the following lines to override the default test script
 script:
- - julia -e 'Pkg.clone("https://github.com/JuliaAlgebra/FixedPolynomials.jl.git"); Pkg.clone(pwd()); Pkg.build("Homotopy"); Pkg.test("Homotopy"; coverage=true)'
+ - julia -e 'Pkg.clone(pwd()); Pkg.build("Homotopy"); Pkg.test("Homotopies"; coverage=true)'
 after_success:
   # push coverage results to Coveralls
   #- julia -e 'cd(Pkg.dir("Homotopy")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
   # push coverage results to Codecov
   - julia -e 'Pkg.add("Documenter")'
-  - julia -e 'cd(Pkg.dir("Homotopy")); include(joinpath("docs", "make.jl"))'
-  - julia -e 'cd(Pkg.dir("Homotopy")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'cd(Pkg.dir("Homotopies")); include(joinpath("docs", "make.jl"))'
+  - julia -e 'cd(Pkg.dir("Homotopies")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'

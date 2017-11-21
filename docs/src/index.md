@@ -1,6 +1,6 @@
 # Introduction
 
-`Homotopy.jl` is a package for constructing (polynomial) [homotopies](https://en.wikipedia.org/wiki/Homotopy) ``H(x,t)``.
+`Homotopies.jl` is a package for constructing (polynomial) [homotopies](https://en.wikipedia.org/wiki/Homotopy) ``H(x,t)``.
 
 Each implemented homotopy has the same [Interface](@ref) so that you can switch easily between
 different homotopy types.
@@ -10,7 +10,7 @@ construction of a total degree system and its start solutions.
 
 ## Example
 ```julia
-using Homotopy
+using Homotopies
 # we use an MultivariatePolynomials implementation to construct the homotopy.
 import DynamicPolynomials: @polyvar
 
@@ -36,5 +36,5 @@ The following homotopies are implemented
 These are subtypes of `AbstractPolynomialHomotopy`
 ```@docs
 StraightLineHomotopy
-GammaTrickHomotopy
+GeodesicOnTheSphere
 ```

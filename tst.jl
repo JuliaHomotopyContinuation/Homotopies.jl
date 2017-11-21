@@ -9,7 +9,7 @@ exps = create_exponents(6, 10)
 
 binomial(4+3, 3)
 
-using Homotopy
+using Homotopies
 
 
 

@@ -1,6 +1,6 @@
 __precompile__()
 
-module Homotopy
+module Homotopies
     import MultivariatePolynomials
     const MP = MultivariatePolynomials
     import FixedPolynomials

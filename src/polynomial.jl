@@ -37,7 +37,7 @@ function Base.isequal(H1::T, H2::T) where {T<:AbstractPolynomialHomotopy}
 end
 
 function Base.show(io::IO, H::AbstractPolynomialHomotopy)
-    println(io, typeof(H), " with $(length(H.start)) polynomials.")
+    println(io, typeof(H), " with $(length(H.start)) polynomials in $(nvariables(H)) variables.")
 end
 
 

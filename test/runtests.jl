@@ -1,4 +1,4 @@
-using Homotopy
+using Homotopies
 using Base.Test
 import FixedPolynomials
 const FP = FixedPolynomials

@@ -2,7 +2,7 @@ using Documenter, Homotopy
 
 makedocs(
     format = :html,
-    sitename = "Homotopy.jl",
+    sitename = "Homotopies.jl",
     pages = [
         "Introduction" => "index.md",
         "Interface" => "interface.md",
@@ -11,7 +11,7 @@ makedocs(
 )
 
 deploydocs(
-    repo   = "github.com/JuliaHomotopyContinuation/Homotopy.jl.git",
+    repo   = "github.com/JuliaHomotopyContinuation/Homotopies.jl.git",
     target = "build",
     julia = "0.6",
     osname = "linux",

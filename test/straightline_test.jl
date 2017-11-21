@@ -55,7 +55,7 @@
     u = zeros(2)
     dt!(u, H, [1, 2, 2.0], 1.0, cfg)
     @test u == [0, -1]
-    @test string(H) == "Homotopy.StraightLineHomotopy{Float64} with 2 polynomials.\n"
+    @test string(H) == "Homotopies.StraightLineHomotopy{Float64} with 2 polynomials in 3 variables.\n"
 
     r = DtDiffResult(cfg)
     w = rand(3)
