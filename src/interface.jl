@@ -136,9 +136,9 @@ function ishomogenous end
 
 
 """
-    evaluate(f::DynamicPolynomials.Polynomial{true,T}, z::Vector{S})
+    evaluate(f::Vector{<:MP.AbstractPolynomial{T}}, z::Vector{S})
 
-Evaluates the vector of DynamicPolynomials f at z .
+Evaluates the vector of MultivariatePolynomials f at z .
 """
 function evaluate(f::Vector{<:MP.AbstractPolynomial{T}}, z::Vector{S}) where {T<:Number, S<:Number}
     R = promote_type(T,S)
