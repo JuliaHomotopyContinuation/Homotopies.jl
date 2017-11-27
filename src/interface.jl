@@ -133,3 +133,23 @@ function ishomogenized end
 Check whether the homotopy `H` is homogenous. This does not imply that `H` was homogenized.
 """
 function ishomogenous end
+
+
+"""
+    evaluate(f::DynamicPolynomials.Polynomial{true,T}, z::Vector{S})
+
+Evaluates the vector of DynamicPolynomials f at z .
+"""
+function evaluate(f::Vector{<:MP.AbstractPolynomial{T}}, z::Vector{S}) where {T<:Number, S<:Number}
+    R = promote_type(T,S)
+    z = convert(Vector{R}, z)
+    f = convert(Vector{FixedPolynomials.Polynomial{R}}, f)
+    return FixedPolynomials.evaluate(f, z)
+
+end
+function evaluate(f::MP.AbstractPolynomial{T}, z::Vector{S}) where {T<:Number,S<:Number}
+    evaluate([f],z)
+end
+function evaluate(f::MP.AbstractPolynomial{T}, z::S) where {T<:Number,S<:Number}
+    evaluate([f], [z])
+end
