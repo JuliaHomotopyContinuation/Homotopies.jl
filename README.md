@@ -1,3 +1,5 @@
+**This package is deprecated and the functionality is moved into [HomotopyContinuation.jl](https://github.com/JuliaHomotopyContinuation/HomotopyContinuation.jl).**
+
 # Homotopies
 
 | **Documentation** | **Build Status** |
